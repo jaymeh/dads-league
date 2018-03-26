@@ -19,7 +19,7 @@ class GetScores extends Command
      *
      * @var string
      */
-    protected $description = 'Runs off and grabs recent scores';
+    protected $description = 'Runs off and grabs recent scores. This will probably change next season but I can deal with it then.';
 
     /**
      * Create a new command instance.
@@ -44,31 +44,40 @@ class GetScores extends Command
 
         $crawler = $client->request('GET', 'https://www.theguardian.com/football/results/more/2018/Mar/25');
 
-        // dd($crawler);
+        $table_data = $crawler->filter('.football-matches__container')->filter('table');
 
-        $leagues = $crawler->filter('table')->filter('caption')->each(function($node) {
-            return $node->text();
-        });
-
-        $teams = $crawler->filter('table')->extract(array('_text', 'class', 'href'));
-
-        dd($leagues, $teams);
-
-        
-
-        dd($elements);
-
-        $text = $crawler->text();
-
-        dd($text);
-
-        $file_data = file_put_contents(storage_path('downloads/page.html'), $text);
-
-        if(!$file_data)
+        $game_data = $table_data->each(function($node)
         {
-            dd('cache failed');
-        }
+            $temp_node = clone($node);
+            $league = trim(preg_replace('/\s\s+/', ' ', $temp_node->filter('caption')->text()));
 
-        dd('finished');
+            $league_data = explode("\n", $league);
+
+            $new_league = array();
+
+            $new_league['league'] = $league_data[0];
+            $new_league['date'] = $league_data[1];
+
+            $data = $node->filter('.football-match--result')->each(function($sub_node) { return $sub_node->text(); });
+
+            $results = [];
+
+            foreach($data as $score) 
+            {
+                $people = trim(preg_replace('/\s\s+/', ' ', $score));
+
+                $people_data = explode(' ', $people);
+
+                $match_status = $people_data[0];
+                $team_1 = $people_data[1];
+                $team_1_score = $people_data[2];
+                $team_2 = $people_data[3];
+                $team_2_score = $people_data[4];
+
+                $results[] = compact('match_status', 'team_1', 'team_1_score', 'team_2', 'team_2_score');
+            }
+
+            return array('data' => $new_league, 'games' => $results);
+        });
     }
 }
