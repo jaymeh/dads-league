@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Team;
 use Goutte\Client;
 use Illuminate\Console\Command;
 
@@ -12,14 +13,14 @@ class GetTeams extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'cron:get-teams';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Gets the list of teams in each league.';
 
     /**
      * Create a new command instance.
@@ -45,27 +46,46 @@ class GetTeams extends Command
             // 'leaguetwofootball'
         ];
 
-        foreach($leagues as $league)
+        $leagues = League::get()->pluck('slug', 'id');
+
+        $clean_teams = [];
+        foreach($leagues as $league_id => $league)
         {
             $client = new Client();
 
             $crawler = $client->request('GET', "https://www.theguardian.com/football/$league/table");
 
+            $logoCrawler = clone $crawler;
+
             $teams = $crawler->filter('span.team-name')->each(function($node) {
                 return $node->text();
             });
 
-            foreach($teams as $team)
-            {
-                $team = trim(preg_replace('/\s\s+/', ' ', $team));
+            $logos = $logoCrawler->filter('span.team-crest')->extract(['style']);
 
-                
+            foreach($logos as $key => $logo)
+            {
+                preg_match_all('/\((.*?)\)/', $logo, $matches);
+
+                if(isset($matches[1]))
+                {
+                    $logos[$key] = str_replace('60', '120', $matches[1][0]);
+                }
             }
 
-            $teams = trim(preg_replace('/\s\s+/', ' ', $temp_node->filter('caption')->text()));
+            foreach($teams as $key => $team)
+            {
+                $team_name = trim(preg_replace('/\s\s+/', ' ', $team));
 
-            dd($teams);
+                $clean_teams[] = [
+                    'name' => $team_name,
+                    'logo' => isset($logos[$key]) ? $logos[$key] : null,
+                    'league' => $league_id
+                ];
+            }
         }
+
+        Team::insert($clean_teams);
         
     }
 }
