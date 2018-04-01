@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\League;
 use App\Team;
 use Goutte\Client;
 use Illuminate\Console\Command;
@@ -39,30 +40,20 @@ class GetTeams extends Command
      */
     public function handle()
     {
-        $leagues = [
-            'premierleague',
-            // 'championship',
-            // 'leagueonefootball',
-            // 'leaguetwofootball'
-        ];
-
         $leagues = League::get()->pluck('slug', 'id');
 
         $clean_teams = [];
         foreach($leagues as $league_id => $league)
         {
             $client = new Client();
-
             $crawler = $client->request('GET', "https://www.theguardian.com/football/$league/table");
 
             $logoCrawler = clone $crawler;
-
             $teams = $crawler->filter('span.team-name')->each(function($node) {
                 return $node->text();
             });
 
             $logos = $logoCrawler->filter('span.team-crest')->extract(['style']);
-
             foreach($logos as $key => $logo)
             {
                 preg_match_all('/\((.*?)\)/', $logo, $matches);
@@ -85,7 +76,9 @@ class GetTeams extends Command
             }
         }
 
-        Team::insert($clean_teams);
-        
+        foreach($clean_teams as $team)
+        {
+            Team::updateOrCreate(['name' => $team['name']], $team);
+        }
     }
 }
