@@ -2,6 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Game;
+use App\League;
+use App\Team;
+use Carbon\Carbon;
 use Goutte\Client;
 use Illuminate\Console\Command;
 
@@ -42,42 +46,99 @@ class GetScores extends Command
 
         $content = [];
 
-        $crawler = $client->request('GET', 'https://www.theguardian.com/football/results/more/2018/Mar/25');
+        $match_day = new Carbon('2017-08-08');
 
-        $table_data = $crawler->filter('.football-matches__container')->filter('table');
+        $today = Carbon::now();
+        $today->setTime(0, 0, 0);
 
-        $game_data = $table_data->each(function($node)
+        $days_left = $match_day->diff($today)->days;
+
+        $bar = $this->output->createProgressBar($days_left);
+
+        while($match_day != $today)
         {
-            $temp_node = clone($node);
-            $league = trim(preg_replace('/\s\s+/', ' ', $temp_node->filter('caption')->text()));
+            $year = $match_day->year;
+            $month = $match_day->format('M');
+            $day = $match_day->format('d');
 
-            $league_data = explode("\n", $league);
+            $crawler = $client->request('GET', "https://www.theguardian.com/football/results/more/$year/$month/$day");
 
-            $new_league = array();
+            $table_data = $crawler->filter('.football-matches__container')->filter('table');
 
-            $new_league['league'] = $league_data[0];
-            $new_league['date'] = $league_data[1];
+            $leagues = League::get();
+            $teams = Team::get();
 
-            $data = $node->filter('.football-match--result')->each(function($sub_node) { return $sub_node->text(); });
-
-            $results = [];
-
-            foreach($data as $score) 
+            $game_data = $table_data->each(function($node) use ($teams)
             {
-                $people = trim(preg_replace('/\s\s+/', ' ', $score));
+                $temp_node = clone($node);
+                $league = trim(preg_replace('/\s\s+/', ' ', $temp_node->filter('caption')->text()));
 
-                $people_data = explode(' ', $people);
+                $league_data = explode("\n", $league);
 
-                $match_status = $people_data[0];
-                $team_1 = $people_data[1];
-                $team_1_score = $people_data[2];
-                $team_2 = $people_data[3];
-                $team_2_score = $people_data[4];
+                $new_league = array();
 
-                $results[] = compact('match_status', 'team_1', 'team_1_score', 'team_2', 'team_2_score');
+                $new_league['league'] = $league_data[0];
+                $new_league['date'] = $league_data[1];
+
+                $data = $node->filter('.football-match--result')->each(function($sub_node) { return trim($sub_node->text()); });
+
+                $results = [];
+
+                foreach($data as $score) 
+                {
+                    $people = trim(preg_replace('/\s\s+/', ';', $score));
+                    $people_data = explode(';', $people);
+
+                    $home_team = $teams->where('name', $people_data[1])->first();
+                    $away_team = $teams->where('name', $people_data[3])->first();
+
+                    if(!$home_team || !$away_team)
+                    {
+                        continue;
+                    }
+
+                    $home_team_id = $home_team->id;
+                    $home_team_score = intval($people_data[2]);
+                    $away_team_id = $away_team->id;
+                    $away_team_score = intval($people_data[4]);
+
+                    $results[] = compact('home_team_id', 'home_team_score', 'away_team_id', 'away_team_score');
+                }
+
+                return array('data' => $new_league, 'games' => $results);
+            });
+
+            foreach($game_data as $games)
+            {
+                $date = $games['data']['date'];
+                $league = $games['data']['league'];
+
+                $league = $leagues->where('name', $league)->first();
+
+                if(!$league)
+                {
+                    continue;
+                }
+
+                $league_id = $league->id;
+
+                foreach($games['games'] as $game)
+                {
+                    $insert_data = $game;
+
+                    $date_object = new Carbon($date);
+
+                    $insert_data['league_id'] = $league_id;
+                    $insert_date['game_date'] = $date_object->format('Y-m-d');
+
+                    Game::updateOrCreate(['home_team_id' => $insert_data['home_team_id'], 'away_team_id' => $insert_data['away_team_id'], 'game_date' => $insert_date['game_date']], $insert_data);
+                }
             }
 
-            return array('data' => $new_league, 'games' => $results);
-        });
+            $match_day->addDay();
+            $bar->advance();
+        }
+
+        $bar->finish();
     }
 }
