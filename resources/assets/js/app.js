@@ -5,9 +5,14 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
+
 require('./bootstrap');
 
 window.Vue = require('vue');
+ 
+Vue.use(Vuetify)
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -16,6 +21,7 @@ window.Vue = require('vue');
  */
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.component('login', require('./components/Login.vue'));
 
 const app = new Vue({
     el: '#app'
