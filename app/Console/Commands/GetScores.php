@@ -68,6 +68,18 @@ class GetScores extends Command
             $leagues = League::get();
             $teams = Team::get();
 
+            if(!$leagues->count())
+            {
+                $this->error('Couldn\'t find any leagues. Please seed the leagues and try again!');
+                break;
+            }
+
+            if(!$teams->count())
+            {
+                $this->error('Couldn\'t find any teams. Please run the team command and try again!');
+                break;
+            }
+
             $game_data = $table_data->each(function($node) use ($teams)
             {
                 $temp_node = clone($node);
