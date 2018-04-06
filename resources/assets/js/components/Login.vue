@@ -7,8 +7,16 @@
 					<v-container fluid grid-list-md>
 						<v-layout row wrap>
 							<v-flex>
-								<!-- <v-card-media :contain="true" :src="'/assets/img/prem-league.png'" height="225"></v-card-media> -->
 								<v-card-media :contain="true" :src="'/assets/img/prem-league.png'" height="225"></v-card-media>
+							</v-flex>
+							<v-flex>
+								<v-card-media :contain="true" :src="'/assets/img/efl.png'" height="225"></v-card-media>
+							</v-flex>
+							<v-flex>
+								<v-card-media :contain="true" :src="'/assets/img/efl-league-one.png'" height="225"></v-card-media>
+							</v-flex>
+							<v-flex>
+								<v-card-media :contain="true" :src="'/assets/img/efl-league-two.png'" height="225"></v-card-media>
 							</v-flex>
 						</v-layout>
 					</v-container>
