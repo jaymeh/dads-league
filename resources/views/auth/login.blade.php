@@ -13,7 +13,7 @@
     </section>
 
     <div class="columns is-marginless is-centered">
-        <div class="column is-5">
+        <div class="column is-three-quarters-tablet is-5-desktop">
             <div class="card">
                 <header class="card-header">
                     <p class="card-header-title">Login</p>
@@ -25,7 +25,7 @@
 
                         <div class="field is-horizontal">
                             <div class="field-label">
-                                <label class="label">E-Mail Address</label>
+                                <label class="label">E-Mail</label>
                             </div>
 
                             <div class="field-body">
