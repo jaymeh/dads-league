@@ -28,8 +28,24 @@
                     </div>
 
                     <div class="navbar-menu" id="navMenu">
-                        <div class="navbar-start"></div>
+                        <div class="navbar-start">
+                            
+                            @if(!Auth::guest())
 
+                                <div class="navbar-item has-dropdown is-hoverable">
+                                    <a class="navbar-link" href="#">Administration</a>
+
+                                    <div class="navbar-dropdown">
+                                        <a class="navbar-item" href="{{ route('players.index') }}">Add Players</a>
+                                        <a class="navbar-item" href="{{ route('login') }}">Tables</a>
+                                        <a class="navbar-item" href="{{ route('login') }}">Add Picks</a>
+                                    </div>
+                                </div>
+                                
+                            @endif
+
+                        </div>
+                        
                         <div class="navbar-end">
                             @if (Auth::guest())
                                 <a class="navbar-item " href="{{ route('login') }}">Login</a>
