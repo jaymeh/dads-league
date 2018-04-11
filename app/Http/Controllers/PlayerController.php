@@ -28,7 +28,7 @@ class PlayerController extends Controller
      */
     public function create()
     {
-        //
+        return view('content.players.create');
     }
 
     /**

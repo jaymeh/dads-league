@@ -12,7 +12,7 @@
     </section>
 
     <div class="columns is-marginless is-centered">
-        <div class="column is-three-quarters-tablet is-5-desktop">
+        <div class="column is-three-quarters-tablet">
             <div class="card">
                 <header class="card-header">
                     <p class="card-header-title">Register</p>
