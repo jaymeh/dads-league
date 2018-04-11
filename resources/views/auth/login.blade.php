@@ -83,7 +83,7 @@
                             <div class="field-label"></div>
 
                             <div class="field-body">
-                                <div class="field is-grouped">
+                                <div class="field is-grouped vertical-middle">
                                     <div class="control">
                                         <button type="submit" class="button is-primary">Login</button>
                                     </div>

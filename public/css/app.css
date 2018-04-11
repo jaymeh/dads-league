@@ -19236,3 +19236,9 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
   color: #fff;
 }
 
+.vertical-middle {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
