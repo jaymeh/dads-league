@@ -2,7 +2,7 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(App\League::class, function (Faker $faker) {
+$factory->define(App\Models\League::class, function (Faker $faker) {
 	$name = $faker->name;
 	
     return [

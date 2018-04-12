@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\League;
 use Illuminate\Database\Seeder;
 
 class LeagueDatabaseSeeder extends Seeder
@@ -19,7 +20,7 @@ class LeagueDatabaseSeeder extends Seeder
     {
     	foreach($this->leagues as $slug => $league)
     	{
-    		App\League::updateOrCreate(['slug' => $slug], ['name' => $league, 'slug' => $slug]);
+    	   League::updateOrCreate(['slug' => $slug], ['name' => $league, 'slug' => $slug]);
     	}
     }
 }

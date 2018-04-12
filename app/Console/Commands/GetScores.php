@@ -2,9 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Game;
-use App\League;
-use App\Team;
+use App\Models\{ Game, League, Team };
 use Carbon\Carbon;
 use Goutte\Client;
 use Illuminate\Console\Command;

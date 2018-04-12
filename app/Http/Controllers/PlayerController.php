@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PlayerAddRequest;
+use App\Models\Player;
 use Illuminate\Http\Request;
 
 class PlayerController extends Controller
@@ -18,7 +20,10 @@ class PlayerController extends Controller
      */
     public function index()
     {
-        return view('content.players.index');
+        $players = Player::all();
+
+        return view('content.players.index')
+            ->with(compact('players'));
     }
 
     /**
@@ -37,9 +42,15 @@ class PlayerController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PlayerAddRequest $request)
     {
-        //
+        $input = $request->only(['name', 'email']);
+
+        $player = new Player;
+        $player->fill($input);
+        $player->save();
+
+        return redirect()->route('players.index');
     }
 
     /**

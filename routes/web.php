@@ -18,9 +18,4 @@ Route::get('/', function () {
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::prefix('players')->name('players.')->group(function() {
-    Route::get('/', ['uses' => 'PlayerController@index', 'as' => 'index']);
-    Route::get('/create', ['uses' => 'PlayerController@create', 'as' => 'create']);
-    Route::post('/create', ['uses' => 'PlayerController@store', 'as' => 'create.post']);
-});
-
+Route::resource('players', 'PlayerController');

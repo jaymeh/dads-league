@@ -31,26 +31,28 @@
 	        			</tr>
 	        		</thead>
 	        		<tbody>
-	        			<tr>
-	        				<td>A name</td>
-	        				<td>An email</td>
-	        				<td>
-	        					<div class="is-pulled-right">
-		        					<a class="button is-small is-rounded is-primary" href="#">
-		        						<span class="icon is-small">
-	      									<i class="fas fa-pencil-alt"></i>
-	    								</span>
-	    								<span>Edit</span>
-	    							</a>
-		        					<a class="button is-small is-rounded is-danger" href="#">
-		        						<span class="icon is-small">
-	      									<i class="fas fa-trash"></i>
-	    								</span>
-		        						<span>Delete</span>
-		        					</a>
-		        				</div>
-	        				</td>
-	        			</tr>
+	        			@foreach($players as $player)
+		        			<tr>
+		        				<td>{{ $player->name }}</td>
+		        				<td>{{ $player->email }}</td>
+		        				<td>
+		        					<div class="is-pulled-right">
+			        					<a class="button is-small is-rounded is-primary" href="{{ route('players.edit', $player) }}">
+			        						<span class="icon is-small">
+		      									<i class="fas fa-pencil-alt"></i>
+		    								</span>
+		    								<span>Edit</span>
+		    							</a>
+			        					<a class="button is-small is-rounded is-danger" href="{{ route('players.destroy', $player) }}">
+			        						<span class="icon is-small">
+		      									<i class="fas fa-trash"></i>
+		    								</span>
+			        						<span>Delete</span>
+			        					</a>
+			        				</div>
+		        				</td>
+		        			</tr>
+		        		@endforeach
 	        		</tbody>
 	        	</table>
 	        </div>

@@ -2,8 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\League;
-use App\Team;
+use App\Models\{ League, Team };
 use Goutte\Client;
 use Illuminate\Console\Command;
 
