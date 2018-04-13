@@ -33,7 +33,7 @@ class PlayerController extends Controller
      */
     public function create()
     {
-        return view('content.players.create');
+        return view('content.players.form');
     }
 
     /**
@@ -56,17 +56,6 @@ class PlayerController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
@@ -74,7 +63,7 @@ class PlayerController extends Controller
      */
     public function edit(Player $player)
     {
-        return view('content.players.create')
+        return view('content.players.form')
             ->with(compact('player'));
     }
 
@@ -103,8 +92,12 @@ class PlayerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Player $player)
     {
-        //
+        trigger_message('Successfully Deleted Player: ' . $player->name, 'success');
+
+        $player->delete();
+
+        return redirect()->route('players.index');
     }
 }

@@ -16,15 +16,8 @@
 
 		<div class="columns is-marginless is-centered">
 	        <div class="column is-three-quarters-tablet">
-	        	
-	        	@include('partials.message')
 
-	        	<div class="level">
-	        		<div class="level-left"></div>
-		        	<div class="level-right">
-		        		<a class="button is-link is-rounded" href="{{ route('players.create') }}">Add Player</a>
-		        	</div>
-	        	</div>
+	        	@include('partials.message')
 
 	        	<table class="table is-fullwidth is-hoverable is-striped is-bordered">
 	        		<thead>
@@ -47,11 +40,16 @@
 		    								</span>
 		    								<span>Edit</span>
 		    							</a>
-			        					<a class="button is-small is-rounded is-danger" href="{{ route('players.destroy', $player) }}">
+		    							<a class="button is-small is-rounded is-danger" href="#" style="cursor:pointer;" onclick="$(this).find('form').submit();">
+		    							
 			        						<span class="icon is-small">
 		      									<i class="fas fa-trash"></i>
 		    								</span>
 			        						<span>Delete</span>
+			        						<form action="{{ route('players.destroy', $player) }}" method="POST" name="delete_item" style="display:none">
+											   <input type="hidden" name="_method" value="DELETE">
+											   {{ csrf_field() }}
+										</form>
 			        					</a>
 			        				</div>
 		        				</td>
@@ -59,6 +57,18 @@
 		        		@endforeach
 	        		</tbody>
 	        	</table>
+
+	        	<div class="level">
+	        		<div class="level-left"></div>
+	        		<a class="button is-link is-rounded" href="{{ route('players.create') }}">
+	        			<span class="icon">
+							<i class="fas fa-user-plus"></i>
+						</span>
+	        			<span>Add Player</span>
+	        		</a>
+		        	<div class="level-right"></div>
+	        	</div>
+
 	        </div>
 	    </div>
     </div>
