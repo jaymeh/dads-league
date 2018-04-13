@@ -51,7 +51,7 @@
                                     <div class="field">
                                         <p class="control">
                                             <input class="input {{ $errors->has('name') ? 'is-danger' : '' }}" id="name" type="text" name="name"
-                                                   value="{{ isset($player) ? $player->name : old('name') }}" autofocus>
+                                                   value="{{ old('name', isset($player) ? $player->name : null) }}" autofocus>
                                         </p>
 
                                         @if ($errors->has('name'))
@@ -72,7 +72,7 @@
                                     <div class="field">
                                         <p class="control">
                                             <input class="input {{ $errors->has('email') ? 'is-danger' : '' }}" id="email" type="email" name="email"
-                                                   value="{{ isset($player) ? $player->email : old('email') }}" autofocus>
+                                                   value="{{ old('email', isset($player) ? $player->email : null) }}" autofocus>
                                         </p>
 
                                         @if ($errors->has('email'))
