@@ -50,6 +50,8 @@ class PlayerController extends Controller
         $player->fill($input);
         $player->save();
 
+        trigger_message('Successfully Added Player: ' . $request->name, 'success');
+
         return redirect()->route('players.index');
     }
 
@@ -61,7 +63,7 @@ class PlayerController extends Controller
      */
     public function show($id)
     {
-        //
+        
     }
 
     /**
@@ -70,9 +72,10 @@ class PlayerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Player $player)
     {
-        //
+        return view('content.players.create')
+            ->with(compact('player'));
     }
 
     /**
@@ -82,9 +85,16 @@ class PlayerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(PlayerAddRequest $request, $id)
     {
-        //
+        $player = Player::find($id);
+        $player->name = $request->name;
+        $player->email = $request->email;
+        $player->save();
+
+        trigger_message('Successfully Updated Player: ' . $request->name, 'success');
+
+        return redirect()->route('players.index');
     }
 
     /**

@@ -13,8 +13,12 @@
     </section>
 	
 	<div class="container">
+
 		<div class="columns is-marginless is-centered">
 	        <div class="column is-three-quarters-tablet">
+	        	
+	        	@include('partials.message')
+
 	        	<div class="level">
 	        		<div class="level-left"></div>
 		        	<div class="level-right">

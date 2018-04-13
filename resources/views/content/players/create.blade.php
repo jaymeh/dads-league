@@ -17,7 +17,7 @@
             	
     		    <div class="card">
     		    	<header class="card-header">
-                        <p class="card-header-title">Create Player</p>
+                        <p class="card-header-title">{{ isset($player) ? 'Edit' : 'Create' }} Player</p>
                     </header>
 
                     <div class="card-content">
@@ -26,13 +26,21 @@
                                 <label class="label"></label>
                             </div>
                             <div class="field-body">
-                            	<p>Fill out the form below and press submit to add a new player to the league.</p>
+                                @if(isset($player))
+                                    <p>Edit form below and press submit to update the existing player.</p>
+                                @else
+                            	   <p>Fill out the form below and press submit to add a new player to the league.</p>
+                                @endif
                             </div>
                         </div>
 
                     	
-                        <form class="player-create-form" method="POST" action="{{ route('players.create.post') }}">
+                        <form class="player-create-form" method="POST" action="{{ isset($player) ? route('players.update', $player->id) : route('players.store') }}">
                             {{ csrf_field() }}
+
+                            @if(isset($player))
+                                <input type="hidden" name="_method" value="PUT">
+                            @endif
 
                             <div class="field is-horizontal">
                                 <div class="field-label">
@@ -43,7 +51,7 @@
                                     <div class="field">
                                         <p class="control">
                                             <input class="input {{ $errors->has('name') ? 'is-danger' : '' }}" id="name" type="text" name="name"
-                                                   value="{{ old('name') }}" autofocus>
+                                                   value="{{ isset($player) ? $player->name : old('name') }}" autofocus>
                                         </p>
 
                                         @if ($errors->has('name'))
@@ -63,8 +71,8 @@
                                 <div class="field-body">
                                     <div class="field">
                                         <p class="control">
-                                            <input class="input {{ $errors->has('name') ? 'is-danger' : '' }}" id="email" type="email" name="email"
-                                                   value="{{ old('email') }}" autofocus>
+                                            <input class="input {{ $errors->has('email') ? 'is-danger' : '' }}" id="email" type="email" name="email"
+                                                   value="{{ isset($player) ? $player->email : old('email') }}" autofocus>
                                         </p>
 
                                         @if ($errors->has('email'))
@@ -86,7 +94,11 @@
     	                                        <span class="icon">
     										    	<i class="fas fa-file"></i>
     										    </span>
-    										    <span>Create</span>
+                                                @if(isset($player))
+                                                    <span>Update</span>
+                                                @else
+                                                    <span>Create</span>
+                                                @endif
     	                                    </button>
                                         </div>
 
