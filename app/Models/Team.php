@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Player;
 use Illuminate\Database\Eloquent\Model;
 
 class Team extends Model
@@ -11,4 +12,9 @@ class Team extends Model
     	'logo',
     	'league'
     ];
+
+    public function player()
+    {
+    	return $this->belongsToMany(Player::class);
+    }
 }

@@ -20,4 +20,8 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::resource('players', 'PlayerController')->except([
     'show'
-]);;
+]);
+
+Route::resource('picks', 'PickController')->except([
+    'show'
+]);
