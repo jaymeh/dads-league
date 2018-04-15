@@ -70,7 +70,7 @@ class GetTeams extends Command
                 $clean_teams[] = [
                     'name' => $team_name,
                     'logo' => isset($logos[$key]) ? $logos[$key] : null,
-                    'league' => $league_id
+                    'league_id' => $league_id
                 ];
             }
         }

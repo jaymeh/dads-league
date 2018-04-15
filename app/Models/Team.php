@@ -10,8 +10,13 @@ class Team extends Model
     protected $fillable = [
     	'name',
     	'logo',
-    	'league'
+    	'league_id'
     ];
+
+    public function league()
+    {
+    	return $this->belongsTo(League::class);
+    }
 
     public function player()
     {
