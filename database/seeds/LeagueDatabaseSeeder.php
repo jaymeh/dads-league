@@ -18,9 +18,23 @@ class LeagueDatabaseSeeder extends Seeder
      */
     public function run()
     {
+        League::truncate();
+        
+        $position = 0;
+
+        $path = '/assets/img/leagues';
+
     	foreach($this->leagues as $slug => $league)
     	{
-    	   League::updateOrCreate(['slug' => $slug], ['name' => $league, 'slug' => $slug]);
+            League::updateOrCreate(['slug' => $slug], 
+            [
+                'name' => $league, 
+                'slug' => $slug, 
+                'logo' => "$path/$slug.png",
+                'position' => $position
+            ]);
+
+           $position++;
     	}
     }
 }
