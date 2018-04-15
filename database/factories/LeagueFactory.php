@@ -8,5 +8,6 @@ $factory->define(App\Models\League::class, function (Faker $faker) {
     return [
         'name' => $name,
         'slug' => str_slug($name),
+        'position' => 0
     ];
 });
