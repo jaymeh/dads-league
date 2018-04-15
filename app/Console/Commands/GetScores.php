@@ -53,6 +53,21 @@ class GetScores extends Command
 
         $bar = $this->output->createProgressBar($days_left);
 
+        $leagues = League::get();
+        $teams = Team::get();
+
+        if(!$leagues->count())
+        {
+            $this->error('Couldn\'t find any leagues. Please seed the leagues and try again!');
+            return;
+        }
+
+        if(!$teams->count())
+        {
+            $this->error('Couldn\'t find any teams. Please run the team command and try again!');
+            return;
+        }
+
         while($match_day != $today)
         {
             $year = $match_day->year;
@@ -62,21 +77,6 @@ class GetScores extends Command
             $crawler = $client->request('GET', "https://www.theguardian.com/football/results/more/$year/$month/$day");
 
             $table_data = $crawler->filter('.football-matches__container')->filter('table');
-
-            $leagues = League::get();
-            $teams = Team::get();
-
-            if(!$leagues->count())
-            {
-                $this->error('Couldn\'t find any leagues. Please seed the leagues and try again!');
-                break;
-            }
-
-            if(!$teams->count())
-            {
-                $this->error('Couldn\'t find any teams. Please run the team command and try again!');
-                break;
-            }
 
             $game_data = $table_data->each(function($node) use ($teams)
             {
