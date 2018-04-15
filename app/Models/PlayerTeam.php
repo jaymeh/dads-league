@@ -1,14 +1,10 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
-use App\Models\Week;
 use Illuminate\Database\Eloquent\Model;
 
 class PlayerTeam extends Model
 {
-    public function week()
-    {
-    	return $this->hasOne(Week::class);
-    }
+    
 }
