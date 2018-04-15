@@ -12,6 +12,11 @@ class Player extends Model
         'email'
     ];
 
+    public function picks()
+    {
+    	return $this->belongsToMany(Team::class, 'player_teams')->withPivot('game_date');
+    }
+
     public function teams()
     {
         return $this->belongsToMany(Team::class);

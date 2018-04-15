@@ -4,11 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\AvailableTeam;
 use App\Models\League;
+use App\Models\Player;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PickController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,8 +22,9 @@ class PickController extends Controller
      */
     public function index()
     {
-        $leagues_with_teams = League::whereHas('availableTeams', function($query) {
-                $query->where('game_date', new Carbon('this saturday'));
+        $this_saturday = new Carbon('this saturday');
+        $leagues_with_teams = League::whereHas('availableTeams', function($query) use ($this_saturday) {
+                $query->where('game_date', $this_saturday);
             })
             ->with('availableTeams.homeTeam','availableTeams.awayTeam')
             ->orderBy('position')
@@ -44,8 +51,12 @@ class PickController extends Controller
 
         $all_teams = $all_teams_by_league->flatten(2);
 
+        $players_with_picks = Player::with(['picks' => function($q) use ($this_saturday) {
+            $q->where('game_date', $this_saturday);
+        }])->get();
+
         return view('content.picks.index')
-            ->with(compact('leagues_with_teams', 'all_teams'));
+            ->with(compact('leagues_with_teams', 'all_teams', 'this_saturday', 'players_with_picks'));
     }
 
     /**
