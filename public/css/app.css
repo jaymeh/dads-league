@@ -19240,8 +19240,17 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
   max-height: 34px;
 }
 
-.team-name {
-  width: 25%;
+.team-picks-table {
+  margin: 0.75rem auto;
+}
+
+.team-picks-table td {
+  padding: 10px;
+}
+
+.team-picks-table .team-logo {
+  width: 60px;
+  text-align: center;
 }
 
 .vertical-middle {
