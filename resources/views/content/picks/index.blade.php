@@ -13,46 +13,57 @@
     </section>
     
     <div class="container">
-        <div class="columns is-marginless is-centered">
-            <div class="column is-three-quarters-tablet">
-
+        <div class="columns is-marginless is-centered is-multiline">
+            <div class="column is-12">
                 @include('partials.message')
-
-                
-
             </div>
+
+            @foreach($players_with_picks as $player)
+
+                <div class="column is-12">
+                    <p>{{ $player->name }}</p>
+
+                    @if($player->picks)
+
+                        $player->picks->first()->id
+
+                    @endif
+                </div>
+
+            @endforeach
+
         </div>
     </div>
+
+    <team-picker :teams="{{ $all_teams->toJson() }}"></team-picker>
 
     @if($leagues_with_teams)
-    <div class="container">
-        <div class="columns is-centered is-multiline">
-            @foreach($leagues_with_teams as $league_with_teams)
-                <div class="column is-half is-3">
-                    <div class="text-center">
-                        <img src="{{ $league_with_teams->logo }}" alt="{{ $league_with_teams->name }} logo" width="200" />
+        <div class="container">
+            <div class="columns is-centered is-multiline">
+                @foreach($leagues_with_teams as $league_with_teams)
+                    <div class="column is-half is-3">
+                        <div class="text-center">
+                            <img src="{{ $league_with_teams->logo }}" alt="{{ $league_with_teams->name }} logo" width="100" />
+                        </div>
+                         <table class="team-picks-table">
+                                <tbody>
+                                    @foreach($league_with_teams->availableTeams as $teams)
+                                        <tr class="team-{{ $teams->homeTeam->id }}">
+                                            <td class="text-center team-logo"><img class="logo-small" src="{{ $teams->homeTeam->logo }}" alt="{{ $teams->homeTeam->name }} logo" /></td>
+                                            <td>{{ $teams->homeTeam->name }}</td>
+                                            
+                                        </tr>
+                                        <tr class="team-{{ $teams->awayTeam->id }}">
+                                            <td class="text-center team-logo"><img class="logo-small" src="{{ $teams->awayTeam->logo }}" alt="{{ $teams->homeTeam->name }} logo" /></td>
+                                            <td>{{ $teams->awayTeam->name }}</td>
+                                        </tr>
+                                    @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                     <table class="team-picks-table">
-                            <tbody>
-                                @foreach($league_with_teams->availableTeams as $teams)
-                                    <tr class="team-{{ $teams->homeTeam->id }}">
-                                        <td class="text-center team-logo"><img class="logo-small" src="{{ $teams->homeTeam->logo }}" alt="{{ $teams->homeTeam->name }} logo" /></td>
-                                        <td>{{ $teams->homeTeam->name }}</td>
-                                        
-                                    </tr>
-                                    <tr class="team-{{ $teams->awayTeam->id }}">
-                                        <td class="text-center team-logo"><img class="logo-small" src="{{ $teams->awayTeam->logo }}" alt="{{ $teams->homeTeam->name }} logo" /></td>
-                                        <td>{{ $teams->awayTeam->name }}</td>
-                                    </tr>
-                                @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
-    </div>
-    
-        
     @endif
 
     {{-- <div class="container">

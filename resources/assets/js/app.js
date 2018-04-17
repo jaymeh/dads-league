@@ -7,7 +7,16 @@
 
 require('./bootstrap');
 
+import Vue from 'vue'
+import Vuex from 'vuex'
+import store from './store'
+
 window.Vue = require('vue');
+Vue.use(Vuex);
+
+
+Vue.component('select-box', require('./components/SelectBox'));
+Vue.component('team-picker', require('./components/TeamPicker'));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -16,9 +25,9 @@ window.Vue = require('vue');
  */
 
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+    store
 });
-
 
 // Bulma NavBar Burger Script
 document.addEventListener('DOMContentLoaded', function () {
