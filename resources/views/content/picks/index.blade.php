@@ -27,7 +27,7 @@
 
                     @if($player->picks)
 
-                        <team-picker></team-picker>
+                        <team-picker :player-id="{{ $player->id }}"></team-picker>
 
                     @endif
                 </div>
