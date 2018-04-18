@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-    
+    {{-- {{ dd($all_teams) }} --}}
+    <vue-loader namespace="teams" :value="{{ $all_teams->toJson() }}"></vue-loader>
+
 	<section class="hero is-primary">
         <div class="hero-body">
             <div class="container">
@@ -25,7 +27,7 @@
 
                     @if($player->picks)
 
-                        $player->picks->first()->id
+                        <team-picker></team-picker>
 
                     @endif
                 </div>
@@ -34,8 +36,6 @@
 
         </div>
     </div>
-
-    <team-picker :teams="{{ $all_teams->toJson() }}"></team-picker>
 
     @if($leagues_with_teams)
         <div class="container">

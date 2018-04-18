@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import picks from './modules/picks'
+import teams from './modules/teams'
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
-    picks
+    teams
   },
 })

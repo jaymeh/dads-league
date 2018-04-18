@@ -14,9 +14,9 @@ import store from './store'
 window.Vue = require('vue');
 Vue.use(Vuex);
 
-
-Vue.component('select-box', require('./components/SelectBox'));
-Vue.component('team-picker', require('./components/TeamPicker'));
+Vue.component('vue-loader', require('./components/vue-loader'));
+Vue.component('select-box', require('./components/select-box'));
+Vue.component('team-picker', require('./components/team-picker'));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -24,7 +24,7 @@ Vue.component('team-picker', require('./components/TeamPicker'));
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-const app = new Vue({
+window.App = new Vue({
     el: '#app',
     store
 });
