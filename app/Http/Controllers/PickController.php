@@ -61,6 +61,8 @@ class PickController extends Controller
                 return [$player->id => $player->picks->pluck('id')];
             });
 
+        trigger_message('Successfully Added Player: ', 'error', 'normal', 'Some error');
+
         return view('content.picks.index')
             ->with(compact('leagues_with_teams', 'all_teams', 'this_saturday', 'players_with_picks', 'previous_picks_by_player'));
     }

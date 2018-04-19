@@ -30125,6 +30125,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('vue-loader', __webpack_re
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('select-box', __webpack_require__(44));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('team-picker', __webpack_require__(46));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('team-row', __webpack_require__(49));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('message', __webpack_require__(68));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -44612,6 +44613,148 @@ var state = {
 	getters: getters,
 	actions: actions,
 	mutations: mutations
+});
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(2)
+/* script */
+var __vue_script__ = __webpack_require__(70)
+/* template */
+var __vue_template__ = __webpack_require__(69)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/message.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-ac5bce80", Component.options)
+  } else {
+    hotAPI.reload("data-v-ac5bce80", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("transition", { attrs: { name: "slide-fade" } }, [
+    _vm.show
+      ? _c(
+          "article",
+          { staticClass: "message", class: [_vm.size, _vm.extraClass] },
+          [
+            _vm.messageTitle
+              ? _c("div", { staticClass: "message-header" }, [
+                  _c("p", [_vm._v(_vm._s(_vm.messageTitle))])
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _c("div", { staticClass: "message-body" }, [
+              _vm._v("\n\t\t\t" + _vm._s(_vm.message) + "\n\t\t")
+            ])
+          ]
+        )
+      : _vm._e()
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-ac5bce80", module.exports)
+  }
+}
+
+/***/ }),
+/* 70 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: {
+		messageSize: {
+			type: String,
+			default: 'normal'
+		},
+		messageClass: {
+			type: String,
+			default: ''
+		},
+		messageTitle: {
+			type: String,
+			default: ''
+		},
+		message: {
+			type: String
+		}
+	},
+
+	data: function data() {
+		return {
+			size: this.messageSize,
+			extraClass: this.messageClass,
+			show: false
+		};
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		this.show = true;
+
+		setTimeout(function () {
+			_this.show = false;
+		}, 5000);
+	}
 });
 
 /***/ })
