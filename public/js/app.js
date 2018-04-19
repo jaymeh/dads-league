@@ -30124,6 +30124,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('vue-loader', __webpack_require__(41));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('select-box', __webpack_require__(44));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('team-picker', __webpack_require__(46));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('team-row', __webpack_require__(63));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -41805,6 +41806,14 @@ var state = {
 	},
 	teamGames: function teamGames(state) {
 		return state.teamGames;
+	},
+	getById: function getById(state) {
+		return function (teamId) {
+			var teamIndex = _.findIndex(state.teams, function (o) {
+				return o.id == teamId;
+			});
+			return state.teams[teamIndex];
+		};
 	}
 
 	// actions
@@ -41831,7 +41840,7 @@ var state = {
 	disableTeam: function disableTeam(store, teamId) {
 		// Enable the games again (Might need a tweak due to other select boxes)
 		_.each(store.teams, function (team, key) {
-			store.teams[key].disabled = false;
+			Vue.set(store.teams[key], 'disabled', false);
 		});
 
 		var gameKey = _.findIndex(store.teamGames, function (o) {
@@ -41843,8 +41852,15 @@ var state = {
 			var teamKey = _.findIndex(store.teams, function (o) {
 				return o.id == team;
 			});
-			store.teams[teamKey].disabled = true;
+			Vue.set(store.teams[teamKey], 'disabled', true);
 		});
+	},
+	disableById: function disableById(store, teamId) {
+		var teamIndex = _.findIndex(store.teams, function (o) {
+			return o.id == teamId;
+		});
+
+		store.teams[teamIndex].disabled = true;
 	}
 };
 
@@ -44383,6 +44399,120 @@ return Tagify;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(4)
+/* script */
+var __vue_script__ = __webpack_require__(65)
+/* template */
+var __vue_template__ = __webpack_require__(64)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/team-row.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-60a3da81", Component.options)
+  } else {
+    hotAPI.reload("data-v-60a3da81", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("tr", { class: { disabled: _vm.team.disabled } }, [
+    _c("td", { staticClass: "text-center team-logo" }, [
+      _c("img", {
+        staticClass: "logo-small",
+        attrs: { src: _vm.team.logo, alt: _vm.imageAlt }
+      })
+    ]),
+    _vm._v(" "),
+    _c("td", [_vm._v(_vm._s(_vm.team.name))])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-60a3da81", module.exports)
+  }
+}
+
+/***/ }),
+/* 65 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['teamId'],
+
+	data: function data() {
+		return {
+			'team': false
+		};
+	},
+
+	computed: {
+		imageAlt: function imageAlt() {
+			return this.team.name + ' logo';
+		}
+	},
+
+	mounted: function mounted() {
+		this.team = this.$store.getters['teams/getById'](this.teamId);
+	}
+});
 
 /***/ })
 /******/ ]);

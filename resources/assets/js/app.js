@@ -17,6 +17,7 @@ Vue.use(Vuex);
 Vue.component('vue-loader', require('./components/vue-loader'));
 Vue.component('select-box', require('./components/select-box'));
 Vue.component('team-picker', require('./components/team-picker'));
+Vue.component('team-row', require('./components/team-row'));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

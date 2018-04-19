@@ -9,7 +9,11 @@ const state = {
 // getters
 const getters = {
 	teams: state => state.teams,
-	teamGames: state => state.teamGames
+	teamGames: state => state.teamGames,
+	getById: state => (teamId) => {
+		let teamIndex = _.findIndex(state.teams, function(o) { return o.id == teamId; });
+		return state.teams[teamIndex];
+	}
 }
 
 // actions
@@ -35,7 +39,7 @@ const mutations = {
 	disableTeam: function(store, teamId) {
 		// Enable the games again (Might need a tweak due to other select boxes)
 		_.each(store.teams, function(team, key) {
-			store.teams[key].disabled = false;
+			Vue.set(store.teams[key], 'disabled', false);
 		});
 
 		let gameKey = _.findIndex(store.teamGames, function(o) { return o.indexOf(teamId) > -1; });
@@ -43,8 +47,13 @@ const mutations = {
 
 		_.each(teamsToDisable, function(team, key) {
 			let teamKey = _.findIndex(store.teams, function(o) { return o.id == team; });
-			store.teams[teamKey].disabled = true;
+			Vue.set(store.teams[teamKey], 'disabled', true);
 		});
+	},
+	disableById: function(store, teamId) {
+		let teamIndex = _.findIndex(store.teams, function(o) { return o.id == teamId; });
+
+		store.teams[teamIndex].disabled = true;
 	}
 }
 

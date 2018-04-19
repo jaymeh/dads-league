@@ -46,18 +46,12 @@
                             <img src="{{ $league_with_teams->logo }}" alt="{{ $league_with_teams->name }} logo" width="100" />
                         </div>
                          <table class="team-picks-table">
-                                <tbody>
-                                    @foreach($league_with_teams->availableTeams as $teams)
-                                        <tr class="team-{{ $teams->homeTeam->id }}">
-                                            <td class="text-center team-logo"><img class="logo-small" src="{{ $teams->homeTeam->logo }}" alt="{{ $teams->homeTeam->name }} logo" /></td>
-                                            <td>{{ $teams->homeTeam->name }}</td>
-                                            
-                                        </tr>
-                                        <tr class="team-{{ $teams->awayTeam->id }}">
-                                            <td class="text-center team-logo"><img class="logo-small" src="{{ $teams->awayTeam->logo }}" alt="{{ $teams->homeTeam->name }} logo" /></td>
-                                            <td>{{ $teams->awayTeam->name }}</td>
-                                        </tr>
-                                    @endforeach
+                            <tbody>
+                                @foreach($league_with_teams->availableTeams as $teams)
+                                    <tr :team-id="{{ $teams->homeTeam->id }}" is="team-row"></tr>
+
+                                    <tr :team-id="{{ $teams->awayTeam->id }}" is="team-row"></tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
