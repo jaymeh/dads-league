@@ -55,8 +55,14 @@ class PickController extends Controller
             $q->where('game_date', $this_saturday);
         }])->get();
 
+        $previous_picks_by_player = Player::with('picks')
+            ->get()
+            ->mapWithKeys(function($player, $key) {
+                return [$player->id => $player->picks->pluck('id')];
+            });
+
         return view('content.picks.index')
-            ->with(compact('leagues_with_teams', 'all_teams', 'this_saturday', 'players_with_picks'));
+            ->with(compact('leagues_with_teams', 'all_teams', 'this_saturday', 'players_with_picks', 'previous_picks_by_player'));
     }
 
     /**

@@ -3,6 +3,7 @@
 @section('content')
     {{-- {{ dd($all_teams) }} --}}
     <vue-loader namespace="teams" :value="{{ $all_teams->toJson() }}"></vue-loader>
+    <vue-loader namespace="picks" :value="{{ $previous_picks_by_player->toJson() }}"></vue-loader>
 
 	<section class="hero is-primary">
         <div class="hero-body">
@@ -22,7 +23,7 @@
 
             @foreach($players_with_picks as $player)
 
-                <div class="column is-12">
+                <div class="column">
                     <p>{{ $player->name }}</p>
 
                     @if($player->picks)

@@ -3,7 +3,8 @@ var _ = require('lodash');
 // initial state
 const state = {
 	teams: [],
-	teamGames: []
+	teamGames: [],
+	activePicks: []
 }
 
 // getters
@@ -13,7 +14,8 @@ const getters = {
 	getById: state => (teamId) => {
 		let teamIndex = _.findIndex(state.teams, function(o) { return o.id == teamId; });
 		return state.teams[teamIndex];
-	}
+	},
+	activePicks: state => state.activePicks
 }
 
 // actions
@@ -26,6 +28,7 @@ const actions = {
 
 		commit('loadTeamGames', games);
 	},
+
 }
 
 // mutations
@@ -37,23 +40,34 @@ const mutations = {
 		Vue.set(store, 'teamGames', games);
 	},
 	disableTeam: function(store, teamId) {
-		// Enable the games again (Might need a tweak due to other select boxes)
+		// Set all disabled
 		_.each(store.teams, function(team, key) {
 			Vue.set(store.teams[key], 'disabled', false);
 		});
 
-		let gameKey = _.findIndex(store.teamGames, function(o) { return o.indexOf(teamId) > -1; });
-		let teamsToDisable = store.teamGames[gameKey];
+		// Loop though all active picks and disable all attached
+		_.each(store.activePicks, function(team, key) {
+			if(team) {
+				let gameKey = _.findIndex(store.teamGames, function(o) { return o.indexOf(team) > -1; });
+				
+				if(gameKey > -1) {
+					let teamsToDisable = store.teamGames[gameKey];
 
-		_.each(teamsToDisable, function(team, key) {
-			let teamKey = _.findIndex(store.teams, function(o) { return o.id == team; });
-			Vue.set(store.teams[teamKey], 'disabled', true);
+					_.each(teamsToDisable, function(disableTeamId, disableKey) {
+						let teamKey = _.findIndex(store.teams, function(o) { return o.id == disableTeamId; });
+						Vue.set(store.teams[teamKey], 'disabled', true);
+					});
+				}
+			}
 		});
 	},
 	disableById: function(store, teamId) {
 		let teamIndex = _.findIndex(store.teams, function(o) { return o.id == teamId; });
 
 		store.teams[teamIndex].disabled = true;
+	},
+	addActivePick: function(store, payload) {
+		Vue.set(store.activePicks, payload.id, payload.team);
 	}
 }
 

@@ -402,6 +402,115 @@ module.exports = g;
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -505,7 +614,7 @@ module.exports = defaults;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11469,115 +11578,6 @@ Vue.compile = compileToFunctions;
 module.exports = Vue;
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(37).setImmediate))
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
 
 /***/ }),
 /* 5 */
@@ -30092,7 +30092,7 @@ var index_esm = {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(14);
-module.exports = __webpack_require__(58);
+module.exports = __webpack_require__(61);
 
 
 /***/ }),
@@ -30101,7 +30101,7 @@ module.exports = __webpack_require__(58);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store__ = __webpack_require__(39);
@@ -30118,13 +30118,13 @@ __webpack_require__(15);
 
 
 
-window.Vue = __webpack_require__(3);
+window.Vue = __webpack_require__(4);
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
 
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('vue-loader', __webpack_require__(41));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('select-box', __webpack_require__(44));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('team-picker', __webpack_require__(46));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('team-row', __webpack_require__(63));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('team-row', __webpack_require__(49));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -30161,7 +30161,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-__webpack_require__(49);
+__webpack_require__(52);
 
 /***/ }),
 /* 15 */
@@ -40634,7 +40634,7 @@ module.exports = __webpack_require__(19);
 var utils = __webpack_require__(0);
 var bind = __webpack_require__(6);
 var Axios = __webpack_require__(21);
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(3);
 
 /**
  * Create an instance of Axios
@@ -40717,7 +40717,7 @@ function isSlowBuffer (obj) {
 "use strict";
 
 
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(3);
 var utils = __webpack_require__(0);
 var InterceptorManager = __webpack_require__(30);
 var dispatchRequest = __webpack_require__(31);
@@ -41256,7 +41256,7 @@ module.exports = InterceptorManager;
 var utils = __webpack_require__(0);
 var transformData = __webpack_require__(32);
 var isCancel = __webpack_require__(10);
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(3);
 var isAbsoluteURL = __webpack_require__(33);
 var combineURLs = __webpack_require__(34);
 
@@ -41771,10 +41771,12 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_teams__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_picks__ = __webpack_require__(67);
+
 
 
 
@@ -41783,7 +41785,8 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
 
 /* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
   modules: {
-    teams: __WEBPACK_IMPORTED_MODULE_2__modules_teams__["a" /* default */]
+    teams: __WEBPACK_IMPORTED_MODULE_2__modules_teams__["a" /* default */],
+    picks: __WEBPACK_IMPORTED_MODULE_3__modules_picks__["a" /* default */]
   }
 }));
 
@@ -41797,7 +41800,8 @@ var _ = __webpack_require__(5);
 // initial state
 var state = {
 	teams: [],
-	teamGames: []
+	teamGames: [],
+	activePicks: []
 
 	// getters
 };var getters = {
@@ -41814,6 +41818,9 @@ var state = {
 			});
 			return state.teams[teamIndex];
 		};
+	},
+	activePicks: function activePicks(state) {
+		return state.activePicks;
 	}
 
 	// actions
@@ -41838,21 +41845,29 @@ var state = {
 		Vue.set(store, 'teamGames', games);
 	},
 	disableTeam: function disableTeam(store, teamId) {
-		// Enable the games again (Might need a tweak due to other select boxes)
+		// Set all disabled
 		_.each(store.teams, function (team, key) {
 			Vue.set(store.teams[key], 'disabled', false);
 		});
 
-		var gameKey = _.findIndex(store.teamGames, function (o) {
-			return o.indexOf(teamId) > -1;
-		});
-		var teamsToDisable = store.teamGames[gameKey];
+		// Loop though all active picks and disable all attached
+		_.each(store.activePicks, function (team, key) {
+			if (team) {
+				var gameKey = _.findIndex(store.teamGames, function (o) {
+					return o.indexOf(team) > -1;
+				});
 
-		_.each(teamsToDisable, function (team, key) {
-			var teamKey = _.findIndex(store.teams, function (o) {
-				return o.id == team;
-			});
-			Vue.set(store.teams[teamKey], 'disabled', true);
+				if (gameKey > -1) {
+					var teamsToDisable = store.teamGames[gameKey];
+
+					_.each(teamsToDisable, function (disableTeamId, disableKey) {
+						var teamKey = _.findIndex(store.teams, function (o) {
+							return o.id == disableTeamId;
+						});
+						Vue.set(store.teams[teamKey], 'disabled', true);
+					});
+				}
+			}
 		});
 	},
 	disableById: function disableById(store, teamId) {
@@ -41861,6 +41876,9 @@ var state = {
 		});
 
 		store.teams[teamIndex].disabled = true;
+	},
+	addActivePick: function addActivePick(store, payload) {
+		Vue.set(store.activePicks, payload.id, payload.team);
 	}
 };
 
@@ -41878,7 +41896,7 @@ var state = {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(42)
 /* template */
@@ -41968,7 +41986,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = null
 /* template */
@@ -42035,7 +42053,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(47)
 /* template */
@@ -42093,6 +42111,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: ['playerId'],
@@ -42100,7 +42123,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	data: function data() {
 		return {
 			player: this.playerId,
-			selectedTeam: ''
+			selectedTeam: '',
+			error: false
 		};
 	},
 
@@ -42121,8 +42145,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 	watch: {
 		selectedTeam: function selectedTeam() {
+			var _this = this;
+
+			this.error = '';
+
 			// Update the disabled team based on the games
+			this.$store.commit('teams/addActivePick', {
+				id: this.playerId,
+				team: this.selectedTeam
+			});
 			this.$store.commit('teams/disableTeam', this.selectedTeam);
+
+			// Flag error if already picked before.
+			var picks = this.$store.getters['picks/getPicksByPlayer'](this.playerId);
+
+			var alreadyPickedMatch = _.findIndex(picks, function (pick) {
+				return _this.selectedTeam == pick;
+			});
+
+			if (alreadyPickedMatch > -1) {
+				this.error = 'This team has already been picked in the past.';
+			}
 		}
 	}
 });
@@ -42135,72 +42178,82 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _c(
-      "select",
-      {
-        directives: [
+  return _c("div", { staticClass: "field" }, [
+    _c("div", { staticClass: "control" }, [
+      _c("div", { staticClass: "select", class: { "is-danger": _vm.error } }, [
+        _c(
+          "select",
           {
-            name: "model",
-            rawName: "v-model",
-            value: _vm.selectedTeam,
-            expression: "selectedTeam"
-          }
-        ],
-        attrs: { id: "team-select" },
-        on: {
-          change: function($event) {
-            var $$selectedVal = Array.prototype.filter
-              .call($event.target.options, function(o) {
-                return o.selected
-              })
-              .map(function(o) {
-                var val = "_value" in o ? o._value : o.value
-                return val
-              })
-            _vm.selectedTeam = $event.target.multiple
-              ? $$selectedVal
-              : $$selectedVal[0]
-          }
-        }
-      },
-      [
-        _c("option", [_vm._v("Please Select...")]),
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.selectedTeam,
+                expression: "selectedTeam"
+              }
+            ],
+            attrs: { id: "team-select" },
+            on: {
+              change: function($event) {
+                var $$selectedVal = Array.prototype.filter
+                  .call($event.target.options, function(o) {
+                    return o.selected
+                  })
+                  .map(function(o) {
+                    var val = "_value" in o ? o._value : o.value
+                    return val
+                  })
+                _vm.selectedTeam = $event.target.multiple
+                  ? $$selectedVal
+                  : $$selectedVal[0]
+              }
+            }
+          },
+          [
+            _c("option", [_vm._v("Please Select...")]),
+            _vm._v(" "),
+            _vm._l(_vm.teams, function(team) {
+              return _c(
+                "option",
+                {
+                  attrs: { disabled: team.disabled },
+                  domProps: { value: team.id }
+                },
+                [_vm._v(_vm._s(team.name))]
+              )
+            })
+          ],
+          2
+        ),
         _vm._v(" "),
-        _vm._l(_vm.teams, function(team) {
-          return _c(
-            "option",
+        _c("input", {
+          directives: [
             {
-              attrs: { disabled: team.disabled },
-              domProps: { value: team.id }
-            },
-            [_vm._v(_vm._s(team.name))]
-          )
-        })
-      ],
-      2
-    ),
-    _vm._v(" "),
-    _c("input", {
-      directives: [
-        {
-          name: "model",
-          rawName: "v-model",
-          value: _vm.selectedTeam,
-          expression: "selectedTeam"
-        }
-      ],
-      attrs: { type: "hidden", name: _vm.playerFieldName },
-      domProps: { value: _vm.selectedTeam },
-      on: {
-        input: function($event) {
-          if ($event.target.composing) {
-            return
+              name: "model",
+              rawName: "v-model",
+              value: _vm.selectedTeam,
+              expression: "selectedTeam"
+            }
+          ],
+          attrs: { type: "hidden", name: _vm.playerFieldName },
+          domProps: { value: _vm.selectedTeam },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.selectedTeam = $event.target.value
+            }
           }
-          _vm.selectedTeam = $event.target.value
-        }
-      }
-    })
+        })
+      ]),
+      _vm._v(" "),
+      _vm.error
+        ? _c("p", { staticClass: "help is-danger" }, [
+            _vm._v(_vm._s(_vm.error))
+          ])
+        : _vm._e()
+    ])
   ])
 }
 var staticRenderFns = []
@@ -42217,18 +42270,128 @@ if (false) {
 /* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var disposed = false
+var normalizeComponent = __webpack_require__(2)
+/* script */
+var __vue_script__ = __webpack_require__(50)
+/* template */
+var __vue_template__ = __webpack_require__(51)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/team-row.vue"
 
-__webpack_require__(50);
-__webpack_require__(51);
-__webpack_require__(52);
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-60a3da81", Component.options)
+  } else {
+    hotAPI.reload("data-v-60a3da81", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 50 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['teamId'],
+
+	data: function data() {
+		return {
+			'team': false
+		};
+	},
+
+	computed: {
+		imageAlt: function imageAlt() {
+			return this.team.name + ' logo';
+		}
+	},
+
+	mounted: function mounted() {
+		this.team = this.$store.getters['teams/getById'](this.teamId);
+	}
+});
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("tr", { class: { disabled: _vm.team.disabled } }, [
+    _c("td", { staticClass: "text-center team-logo" }, [
+      _c("img", {
+        staticClass: "logo-small",
+        attrs: { src: _vm.team.logo, alt: _vm.imageAlt }
+      })
+    ]),
+    _vm._v(" "),
+    _c("td", [_vm._v(_vm._s(_vm.team.name))])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-60a3da81", module.exports)
+  }
+}
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
 __webpack_require__(53);
 __webpack_require__(54);
 __webpack_require__(55);
 __webpack_require__(56);
 __webpack_require__(57);
+__webpack_require__(58);
+__webpack_require__(59);
+__webpack_require__(60);
 
 /***/ }),
-/* 50 */
+/* 53 */
 /***/ (function(module, exports) {
 
 (function () {
@@ -42263,7 +42426,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 
 
 /***/ }),
-/* 51 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
@@ -43112,7 +43275,7 @@ return datePicker;
 
 
 /***/ }),
-/* 52 */
+/* 55 */
 /***/ (function(module, exports) {
 
 var bulmaCarousel = (function () {
@@ -43374,7 +43537,7 @@ return Carousel;
 
 
 /***/ }),
-/* 53 */
+/* 56 */
 /***/ (function(module, exports) {
 
 var bulmaIconpicker = (function () {
@@ -43648,7 +43811,7 @@ return IconPicker;
 
 
 /***/ }),
-/* 54 */
+/* 57 */
 /***/ (function(module, exports) {
 
 (function () {
@@ -43717,7 +43880,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 /***/ }),
-/* 55 */
+/* 58 */
 /***/ (function(module, exports) {
 
 (function () {
@@ -43802,7 +43965,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 /***/ }),
-/* 56 */
+/* 59 */
 /***/ (function(module, exports) {
 
 var bulmaSteps = (function () {
@@ -44020,7 +44183,7 @@ return StepsWizard;
 
 
 /***/ }),
-/* 57 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
@@ -44395,123 +44558,60 @@ return Tagify;
 
 
 /***/ }),
-/* 58 */
+/* 61 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 59 */,
-/* 60 */,
-/* 61 */,
 /* 62 */,
-/* 63 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(4)
-/* script */
-var __vue_script__ = __webpack_require__(65)
-/* template */
-var __vue_template__ = __webpack_require__(64)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/team-row.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-60a3da81", Component.options)
-  } else {
-    hotAPI.reload("data-v-60a3da81", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 64 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("tr", { class: { disabled: _vm.team.disabled } }, [
-    _c("td", { staticClass: "text-center team-logo" }, [
-      _c("img", {
-        staticClass: "logo-small",
-        attrs: { src: _vm.team.logo, alt: _vm.imageAlt }
-      })
-    ]),
-    _vm._v(" "),
-    _c("td", [_vm._v(_vm._s(_vm.team.name))])
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-60a3da81", module.exports)
-  }
-}
-
-/***/ }),
-/* 65 */
+/* 63 */,
+/* 64 */,
+/* 65 */,
+/* 66 */,
+/* 67 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
+var _ = __webpack_require__(5);
 
-/* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['teamId'],
+// initial state
+var state = {
+	picks: []
 
-	data: function data() {
-		return {
-			'team': false
+	// getters
+};var getters = {
+	picks: function picks(state) {
+		return state.picks;
+	},
+	getPicksByPlayer: function getPicksByPlayer(state) {
+		return function (playerId) {
+			return state.picks[playerId];
 		};
-	},
-
-	computed: {
-		imageAlt: function imageAlt() {
-			return this.team.name + ' logo';
-		}
-	},
-
-	mounted: function mounted() {
-		this.team = this.$store.getters['teams/getById'](this.teamId);
 	}
+
+	// actions
+};var actions = {
+	load: function load(_ref, picks) {
+		var commit = _ref.commit;
+
+		commit('load', picks);
+	}
+
+	// mutations
+};var mutations = {
+	load: function load(store, picks) {
+		Vue.set(store, 'picks', picks);
+	}
+};
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+	namespaced: true,
+
+	state: state,
+	getters: getters,
+	actions: actions,
+	mutations: mutations
 });
 
 /***/ })
