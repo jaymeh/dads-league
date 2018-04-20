@@ -19240,6 +19240,19 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
   max-height: 34px;
 }
 
+.card .team-logo {
+  height: 120px;
+  margin: 20px;
+}
+
+.select {
+  width: 100%;
+}
+
+.select select {
+  width: 100%;
+}
+
 /* Enter and leave animations can use different */
 
 /* durations and timing functions.              */

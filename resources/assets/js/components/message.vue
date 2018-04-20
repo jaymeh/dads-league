@@ -1,5 +1,5 @@
 <template>
-	<transition name="slide-fade">
+	<transition name="slide-fade" mode="out-in">
 		<article class="message" v-bind:class="[ size, extraClass ]" v-if="show">
 			<div class="message-header" v-if="messageTitle">
 				<p>{{ messageTitle }}</p>

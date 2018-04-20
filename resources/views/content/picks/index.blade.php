@@ -16,50 +16,64 @@
     </section>
     
     <div class="container">
-        <div class="columns is-marginless is-centered is-multiline">
-            <div class="column is-12">
-                @include('partials.message')
-            </div>
-
-            @foreach($players_with_picks as $player)
-
-                <div class="column">
-                    <p>{{ $player->name }}</p>
-
-                    @if($player->picks)
-
-                        <team-picker :player-id="{{ $player->id }}"></team-picker>
-
-                    @endif
+        <section class="section">
+            <div class="columns is-marginless is-centered is-multiline">
+                <div class="column is-12">
+                    @include('partials.message')
                 </div>
 
-            @endforeach
+                @foreach($players_with_picks as $player)
 
-        </div>
+                    <div class="column is-3">
+                        <div class="card">
+                            <div class="card-image text-center">
+                                <player-picked-team-image :player-id="{{ $player->id }}"></player-picked-team-image>
+                            </div>
+                        <div class="card-content">
+                            <div class="media">
+                                <div class="media-content text-center">
+                                    <p class="title is-4">{{ $player->name }}</p>
+                                </div>
+                            </div>
+
+                            @if($player->picks)
+                                <div class="content">
+                                    <team-picker :player-id="{{ $player->id }}"></team-picker>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                @endforeach
+
+            </div>
+        </section>
+        <section class="section">
+            @if($leagues_with_teams)
+                <div class="columns is-centered is-multiline">
+                    @foreach($leagues_with_teams as $league_with_teams)
+                        <div class="column is-half is-3">
+                            <div class="text-center">
+                                <img src="{{ $league_with_teams->logo }}" alt="{{ $league_with_teams->name }} logo" width="100" />
+                            </div>
+                             <table class="team-picks-table">
+                                <tbody>
+                                    @foreach($league_with_teams->availableTeams as $teams)
+                                        <tr :team-id="{{ $teams->homeTeam->id }}" is="team-row"></tr>
+
+                                        <tr :team-id="{{ $teams->awayTeam->id }}" is="team-row"></tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </section>
     </div>
 
-    @if($leagues_with_teams)
-        <div class="container">
-            <div class="columns is-centered is-multiline">
-                @foreach($leagues_with_teams as $league_with_teams)
-                    <div class="column is-half is-3">
-                        <div class="text-center">
-                            <img src="{{ $league_with_teams->logo }}" alt="{{ $league_with_teams->name }} logo" width="100" />
-                        </div>
-                         <table class="team-picks-table">
-                            <tbody>
-                                @foreach($league_with_teams->availableTeams as $teams)
-                                    <tr :team-id="{{ $teams->homeTeam->id }}" is="team-row"></tr>
-
-                                    <tr :team-id="{{ $teams->awayTeam->id }}" is="team-row"></tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
+    
 
     {{-- <div class="container">
         @if($leagues_with_teams)

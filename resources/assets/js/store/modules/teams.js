@@ -15,7 +15,13 @@ const getters = {
 		let teamIndex = _.findIndex(state.teams, function(o) { return o.id == teamId; });
 		return state.teams[teamIndex];
 	},
-	activePicks: state => state.activePicks
+	activePicks: state => state.activePicks,
+	getPickedTeamByPlayerId: state => (playerId) => {
+		let teamId = state.activePicks[playerId];
+		let teamIndex = _.findIndex(state.teams, function(o) { return o.id == teamId; });
+		
+		return state.teams[teamIndex];
+	}
 }
 
 // actions
