@@ -23,9 +23,9 @@
                 </div>
 
                 @foreach($players_with_picks as $player)
-
-                    @include('partials.picks.pick-card')
-
+                    <div class="column is-3">
+                        @include('partials.picks.pick-card')
+                    </div>
                 @endforeach
 
             </div>
