@@ -19313,6 +19313,16 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
   text-align: center;
 }
 
+.box .columns {
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.box .columns:last-child {
+  margin-bottom: 0;
+}
+
 @media screen and (max-width: 768px) {
   .flex-mobile {
     display: -webkit-box;

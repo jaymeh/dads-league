@@ -23,5 +23,8 @@ Route::resource('players', 'PlayerController')->except([
 ]);
 
 Route::resource('picks', 'PickController')->except([
-    'show'
+    'show',
+    'update',
+    'destroy',
+    'create'
 ]);

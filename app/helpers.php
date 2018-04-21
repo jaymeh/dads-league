@@ -41,3 +41,15 @@ if(!function_exists('trigger_message'))
 		}
 	}
 }
+
+if(!function_exists('current_season')) {
+	function current_season() 
+	{
+		$date = Carbon\Carbon::now();
+		$current_season = App\Models\Season::whereDate('start_date', '<=', $date)
+			->whereDate('end_date', '>=', $date)
+			->first();
+
+		return $current_season;
+	}
+}
