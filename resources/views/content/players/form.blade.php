@@ -92,7 +92,7 @@
                                         <div class="is-pulled-left">
                                             <button type="submit" class="button is-primary">
     	                                        <span class="icon">
-    										    	<i class="fas fa-file"></i>
+    										    	<i class="fas fa-save"></i>
     										    </span>
                                                 @if(isset($player))
                                                     <span>Update</span>

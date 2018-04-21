@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PickSaveRequest;
 use App\Models\AvailableTeam;
 use App\Models\League;
 use App\Models\Player;
+use App\Models\PlayerTeam;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -20,7 +22,7 @@ class PickController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $this_saturday = new Carbon('this saturday');
         $leagues_with_teams = League::whereHas('availableTeams', function($query) use ($this_saturday) {
@@ -52,17 +54,26 @@ class PickController extends Controller
         $all_teams = $all_teams_by_league->flatten(2);
 
         $players_with_picks = Player::with(['picks' => function($q) use ($this_saturday) {
-            $q->where('game_date', $this_saturday);
-        }])->get();
+                $q->where('game_date', $this_saturday);
+            }])
+            ->get();
 
-        $previous_picks_by_player = Player::with('picks')
+        $player_existing_picks = $players_with_picks
+            ->mapWithKeys(function($player, $key) {
+                return [$player->id => $player->picks->pluck('id')->first()];
+            });
+
+        $previous_picks_by_player = Player::with([
+            'picks' => function($q) use ($this_saturday) {
+                $q->where('game_date', '!=', $this_saturday);
+            }])
             ->get()
             ->mapWithKeys(function($player, $key) {
                 return [$player->id => $player->picks->pluck('id')];
             });
 
         return view('content.picks.index')
-            ->with(compact('leagues_with_teams', 'all_teams', 'this_saturday', 'players_with_picks', 'previous_picks_by_player'));
+            ->with(compact('leagues_with_teams', 'all_teams', 'this_saturday', 'players_with_picks', 'previous_picks_by_player', 'player_existing_picks'));
     }
 
     /**
@@ -81,9 +92,25 @@ class PickController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PickSaveRequest $request)
     {
-        //
+        $picks = $request->players;
+        $date = $request->game_date;
+
+        // Loop through all the picks + save them
+        foreach($picks as $player_id => $pick)
+        {
+            $existing_pick = PlayerTeam::updateOrCreate([
+                'player_id' => $player_id, 
+                'game_date' => $date
+            ], [
+                'team_id' => $pick
+            ]);
+        }
+
+        trigger_message('Successfully saved/updated this weeks picks.', 'success');
+
+        return redirect()->back();
     }
 
     /**

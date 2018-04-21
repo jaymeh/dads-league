@@ -16,42 +16,43 @@
     </section>
     
     <div class="container">
-        <section class="section">
-            <div class="columns is-marginless is-centered is-multiline">
-                <div class="column is-12">
+        <div class="columns is-marginless is-centered is-multiline">
+            <div class="column is-12">
+                @if(Session::has('message'))
                     @include('partials.message')
-                </div>
-
-                @foreach($players_with_picks as $player)
-                    <div class="column is-3">
-                        @include('partials.picks.pick-card')
-                    </div>
-                @endforeach
-
+                @endif
             </div>
-        </section>
-        <section class="section">
-            @if($leagues_with_teams)
-                <div class="columns is-centered is-multiline">
-                    @foreach($leagues_with_teams as $league_with_teams)
-                        <div class="column is-half is-3">
-                            <div class="text-center">
-                                <img src="{{ $league_with_teams->logo }}" alt="{{ $league_with_teams->name }} logo" width="100" />
+        </div>
+    
+        <div class="columns is-centered is-multiline">
+            <div class="column is-12">
+                <form action="{{ route('picks.store') }}" method="POST">
+                    {{ csrf_field() }}
+                    <input type="hidden" name="game_date" value="{{ $this_saturday }}">
+                    <div class="columns is-centered is-multiline">
+                        @foreach($players_with_picks as $player)
+                            <div class="column is-one-third-tablet is-one-quarter-desktop">
+                                @include('partials.picks.pick-card')
                             </div>
-                             <table class="team-picks-table">
-                                <tbody>
-                                    @foreach($league_with_teams->availableTeams as $teams)
-                                        <tr :team-id="{{ $teams->homeTeam->id }}" is="team-row"></tr>
-
-                                        <tr :team-id="{{ $teams->awayTeam->id }}" is="team-row"></tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                        @endforeach
+                    </div>
+                    <div class="level flex-mobile">
+                        <div class="level-left"></div>
+                        <div class="field">
+                            <div class="control">
+                                <button class="button is-primary">
+                                    <span class="icon">
+                                        <i class="fas fa-save"></i>
+                                    </span>
+                                    <span>Save</span>
+                                </button>
+                            </div>
                         </div>
-                    @endforeach
-                </div>
-            @endif
-        </section>
+                        <div class="level-right"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     

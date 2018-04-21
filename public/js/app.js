@@ -30092,7 +30092,7 @@ var index_esm = {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(14);
-module.exports = __webpack_require__(65);
+module.exports = __webpack_require__(68);
 
 
 /***/ }),
@@ -30125,8 +30125,8 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('vue-loader', __webpack_re
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('select-box', __webpack_require__(45));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('team-picker', __webpack_require__(47));
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('team-row', __webpack_require__(50));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('player-picked-team-image', __webpack_require__(70));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('message', __webpack_require__(53));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('player-picked-team-image', __webpack_require__(53));
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('message', __webpack_require__(56));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -30163,7 +30163,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-__webpack_require__(56);
+__webpack_require__(59);
 
 /***/ }),
 /* 15 */
@@ -42176,13 +42176,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['playerId'],
+	props: ['playerId', 'teamId', 'messageError'],
 
 	data: function data() {
 		return {
 			player: this.playerId,
-			selectedTeam: '',
-			error: false
+			selectedTeam: this.teamId,
+			error: this.messageError
 		};
 	},
 
@@ -42197,13 +42197,35 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 	methods: {},
 
-	mounted: function mounted() {},
+	mounted: function mounted() {
+		var _this = this;
+
+		if (this.selectedTeam) {
+			// Update the disabled team based on the games
+			this.$store.commit('teams/addActivePick', {
+				id: this.playerId,
+				team: parseInt(this.selectedTeam)
+			});
+			this.$store.commit('teams/disableTeam', this.selectedTeam);
+
+			// Flag error if already picked before.
+			var picks = this.$store.getters['picks/getPicksByPlayer'](this.playerId);
+
+			var alreadyPickedMatch = _.findIndex(picks, function (pick) {
+				return _this.selectedTeam == pick;
+			});
+
+			if (alreadyPickedMatch > -1) {
+				this.error = 'This team has already been picked in the past.';
+			}
+		}
+	},
 
 	components: {},
 
 	watch: {
 		selectedTeam: function selectedTeam() {
-			var _this = this;
+			var _this2 = this;
 
 			this.error = '';
 
@@ -42217,8 +42239,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			// Flag error if already picked before.
 			var picks = this.$store.getters['picks/getPicksByPlayer'](this.playerId);
 
+			console.log(picks);
+
 			var alreadyPickedMatch = _.findIndex(picks, function (pick) {
-				return _this.selectedTeam == pick;
+				return _this2.selectedTeam == pick;
 			});
 
 			if (alreadyPickedMatch > -1) {
@@ -42460,6 +42484,112 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
+Component.options.__file = "resources/assets/js/components/player-picked-team-image.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-0de0e2fa", Component.options)
+  } else {
+    hotAPI.reload("data-v-0de0e2fa", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 54 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: {
+		'playerId': ''
+	},
+
+	data: function data() {
+		return {
+			logo: '/assets/img/picks/placeholder.png'
+		};
+	},
+
+	computed: {
+		team: function team() {
+			return this.$store.getters['teams/getPickedTeamByPlayerId'](this.playerId);
+		},
+		logoImage: function logoImage() {
+			if (this.team) {
+				return this.team.logo;
+			}
+
+			return this.logo;
+		}
+	}
+});
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("img", {
+    staticClass: "team-logo",
+    attrs: { src: _vm.logoImage, alt: "Placeholder image" }
+  })
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-0de0e2fa", module.exports)
+  }
+}
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(57)
+/* template */
+var __vue_template__ = __webpack_require__(58)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
 Component.options.__file = "resources/assets/js/components/message.vue"
 
 /* hot reload */
@@ -42482,7 +42612,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 54 */
+/* 57 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -42539,7 +42669,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 55 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -42577,21 +42707,21 @@ if (false) {
 }
 
 /***/ }),
-/* 56 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-__webpack_require__(57);
-__webpack_require__(58);
-__webpack_require__(59);
 __webpack_require__(60);
 __webpack_require__(61);
 __webpack_require__(62);
 __webpack_require__(63);
 __webpack_require__(64);
+__webpack_require__(65);
+__webpack_require__(66);
+__webpack_require__(67);
 
 /***/ }),
-/* 57 */
+/* 60 */
 /***/ (function(module, exports) {
 
 (function () {
@@ -42626,7 +42756,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 
 
 /***/ }),
-/* 58 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
@@ -43475,7 +43605,7 @@ return datePicker;
 
 
 /***/ }),
-/* 59 */
+/* 62 */
 /***/ (function(module, exports) {
 
 var bulmaCarousel = (function () {
@@ -43737,7 +43867,7 @@ return Carousel;
 
 
 /***/ }),
-/* 60 */
+/* 63 */
 /***/ (function(module, exports) {
 
 var bulmaIconpicker = (function () {
@@ -44011,7 +44141,7 @@ return IconPicker;
 
 
 /***/ }),
-/* 61 */
+/* 64 */
 /***/ (function(module, exports) {
 
 (function () {
@@ -44080,7 +44210,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 /***/ }),
-/* 62 */
+/* 65 */
 /***/ (function(module, exports) {
 
 (function () {
@@ -44165,7 +44295,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 /***/ }),
-/* 63 */
+/* 66 */
 /***/ (function(module, exports) {
 
 var bulmaSteps = (function () {
@@ -44383,7 +44513,7 @@ return StepsWizard;
 
 
 /***/ }),
-/* 64 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function (global, factory) {
@@ -44758,120 +44888,10 @@ return Tagify;
 
 
 /***/ }),
-/* 65 */
+/* 68 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 66 */,
-/* 67 */,
-/* 68 */,
-/* 69 */,
-/* 70 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(1)
-/* script */
-var __vue_script__ = __webpack_require__(71)
-/* template */
-var __vue_template__ = __webpack_require__(72)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/player-picked-team-image.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-0de0e2fa", Component.options)
-  } else {
-    hotAPI.reload("data-v-0de0e2fa", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 71 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-	props: {
-		'playerId': ''
-	},
-
-	data: function data() {
-		return {
-			logo: '/assets/img/picks/placeholder.png'
-		};
-	},
-
-	computed: {
-		team: function team() {
-			return this.$store.getters['teams/getPickedTeamByPlayerId'](this.playerId);
-		},
-		logoImage: function logoImage() {
-			if (this.team) {
-				return this.team.logo;
-			}
-
-			return this.logo;
-		}
-	}
-});
-
-/***/ }),
-/* 72 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("img", {
-    staticClass: "team-logo",
-    attrs: { src: _vm.logoImage, alt: "Placeholder image" }
-  })
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-0de0e2fa", module.exports)
-  }
-}
 
 /***/ })
 /******/ ]);

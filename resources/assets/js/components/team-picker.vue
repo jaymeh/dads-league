@@ -16,14 +16,16 @@
 <script>
 	export default {
 		props: [
-			'playerId'
+			'playerId',
+			'teamId',
+			'messageError'
 		],
 
 		data: function() {
 			return {
 				player: this.playerId,
-				selectedTeam: '',
-				error: false
+				selectedTeam: this.teamId,
+				error: this.messageError
 			}
 		},
 
@@ -41,7 +43,25 @@
 		},
 
 		mounted: function () {
-			
+			if(this.selectedTeam)
+			{
+				// Update the disabled team based on the games
+				this.$store.commit('teams/addActivePick', {
+					id: this.playerId, 
+					team: parseInt(this.selectedTeam)
+				});
+				this.$store.commit('teams/disableTeam', this.selectedTeam);
+
+				// Flag error if already picked before.
+				let picks = this.$store.getters['picks/getPicksByPlayer'](this.playerId);
+
+				let alreadyPickedMatch = _.findIndex(picks, pick => { return this.selectedTeam == pick });
+
+				if(alreadyPickedMatch > -1)
+				{
+					this.error = 'This team has already been picked in the past.';
+				}
+			}
 		},
 
 		components: {},
@@ -59,6 +79,8 @@
 
 				// Flag error if already picked before.
 				let picks = this.$store.getters['picks/getPicksByPlayer'](this.playerId);
+
+				console.log(picks);
 
 				let alreadyPickedMatch = _.findIndex(picks, pick => { return this.selectedTeam == pick });
 
