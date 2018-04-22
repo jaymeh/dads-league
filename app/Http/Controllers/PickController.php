@@ -29,13 +29,9 @@ class PickController extends Controller
         $season->load('picks.player');
         $picks = $season->picks;
 
-        // dd($picks);
-
         $next_date = new Carbon('this saturday');
 
         $has_picks = $picks->where('game_date', $next_date);
-
-        dd(Fixture::whereId(2)->with('game')->get());
 
         $this_week_selection = false;
         if(!$has_picks->count())
