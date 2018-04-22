@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PickSaveRequest;
-use App\Models\AvailableTeam;
+use App\Models\Fixture;
 use App\Models\League;
 use App\Models\Player;
 use App\Models\PlayerTeam;
@@ -29,9 +29,13 @@ class PickController extends Controller
         $season->load('picks.player');
         $picks = $season->picks;
 
+        // dd($picks);
+
         $next_date = new Carbon('this saturday');
 
         $has_picks = $picks->where('game_date', $next_date);
+
+        dd(Fixture::whereId(2)->with('game')->get());
 
         $this_week_selection = false;
         if(!$has_picks->count())
@@ -98,10 +102,10 @@ class PickController extends Controller
     public function edit($the_game_date)
     {
         $the_game_date = new Carbon($the_game_date);
-        $leagues_with_teams = League::whereHas('availableTeams', function($query) use ($the_game_date) {
+        $leagues_with_teams = League::whereHas('fixtures', function($query) use ($the_game_date) {
                 $query->where('game_date', $the_game_date);
             })
-            ->with('availableTeams.homeTeam','availableTeams.awayTeam')
+            ->with('fixtures.homeTeam','fixtures.awayTeam')
             ->orderBy('position')
             ->get();
 
@@ -109,7 +113,7 @@ class PickController extends Controller
 
         $all_teams_by_league = $leagues_with_teams->map(function($league) {
 
-            return $league->availableTeams->map(function($teams) {
+            return $league->fixtures->map(function($teams) {
                 $team_names = [$teams->homeTeam->id => [
                     'id' => $teams->homeTeam->id,
                     'name' => $teams->homeTeam->name,

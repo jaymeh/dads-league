@@ -79,7 +79,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($league_with_teams->availableTeams as $teams)
+                                @foreach($league_with_teams->fixtures as $teams)
                                     <tr>
                                         <td class="text-center"><img class="logo-small" src="{{ $teams->homeTeam->logo }}" alt="{{ $teams->homeTeam->name }} logo" /></td>
                                         <td class="text-center team-name">{{ $teams->homeTeam->name }}</td>

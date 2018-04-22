@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\AvailableTeam;
+use App\Models\Fixture;
 use App\Models\League;
 use App\Models\Team;
 use Carbon\Carbon;
@@ -141,7 +141,7 @@ class GetWeeklyFixtures extends Command
                     continue;
                 }
 
-                AvailableTeam::updateOrCreate([
+                Fixture::updateOrCreate([
                     'home_team_id' => $insert_data['home_team_id'], 
                     'away_team_id' => $insert_data['away_team_id'], 
                     'game_date' => $insert_date['game_date']

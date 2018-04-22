@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\AvailableTeam;
+use App\Models\Fixture;
 use App\Models\{ Game, League, Team };
 use Carbon\Carbon;
 use Goutte\Client;
@@ -62,7 +62,7 @@ class GetScores extends Command
 
         $bar = $this->output->createProgressBar($days_left);
 
-        $fixtures = AvailableTeam::get();
+        $fixtures = Fixture::get();
 
         $leagues = League::get();
         $teams = Team::get();
@@ -146,8 +146,6 @@ class GetScores extends Command
                 {
                     $insert_data = $game;
                     $game_date = new Carbon($games['data']['date']);
-
-                    // dd($game_date);
 
                     $insert_data['league_id'] = $league_id;
 

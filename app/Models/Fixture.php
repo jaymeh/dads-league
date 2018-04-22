@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AvailableTeam extends Model
+class Fixture extends Model
 {
     protected $fillable = [
     	'home_team_id',
@@ -26,5 +26,10 @@ class AvailableTeam extends Model
     public function awayTeam()
     {
     	return $this->hasOne(Team::class, 'id', 'away_team_id');
+    }
+
+    public function game()
+    {
+        return $this->hasOne(Game::class);
     }
 }

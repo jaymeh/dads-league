@@ -10,9 +10,9 @@ class League extends Model
     	'position'
     ];
 
-    public function availableTeams()
+    public function fixtures()
     {
-    	return $this->hasMany(AvailableTeam::class);
+    	return $this->hasMany(Fixture::class);
     }
 
     public function teams()

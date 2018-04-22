@@ -15,4 +15,9 @@ class Game extends Model
     	'game_date',
     	'fixture_id'
     ];
+
+    public function fixture()
+    {
+    	return $this->belongsTo(Fixture::class);
+    }
 }
