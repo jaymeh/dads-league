@@ -12,6 +12,7 @@ class Game extends Model
     	'away_team_id',
     	'away_team_score',
     	'league_id',
-    	'game_date'
+    	'game_date',
+    	'fixture_id'
     ];
 }

@@ -49,6 +49,8 @@ class GetWeeklyFixtures extends Command
         $fixture_month = $fixture_date->format('M');
         $fixture_day = $fixture_date->format('d');
 
+        // dd("https://www.theguardian.com/football/fixtures/more/$fixture_year/$fixture_month/$fixture_day");
+
         $crawler = $client->request('GET', "https://www.theguardian.com/football/fixtures/more/$fixture_year/$fixture_month/$fixture_day");
 
         $fixture_table_data = $crawler->filter('.football-matches__container')->filter('table');
@@ -89,6 +91,7 @@ class GetWeeklyFixtures extends Command
                 $people = trim(preg_replace('/\s\s+/', ';', $team));
                 $people_data = explode(';', $people);
 
+                // dd($people_data[0]);
                 $home_team = $teams->where('name', $people_data[0])->first();
                 $away_team = $teams->where('name', $people_data[1])->first();
 
@@ -120,6 +123,8 @@ class GetWeeklyFixtures extends Command
             }
 
             $league_id = $league->id;
+
+            // dd($games);
 
             foreach($games['games'] as $game)
             {

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\AvailableTeam;
 use App\Models\{ Game, League, Team };
 use Carbon\Carbon;
 use Goutte\Client;
@@ -41,10 +42,18 @@ class GetScores extends Command
     public function handle()
     {
         $client = new Client();
-
         $content = [];
 
-        $match_day = new Carbon('2017-08-08');
+        $season = current_season();
+        if(!$season)
+        {
+            $this->error('No season is currently active.');
+            return;
+        }
+
+        $match_day = $season->start_date;
+
+        $match_day = new Carbon('2018-04-21');
 
         $today = Carbon::now();
         $today->setTime(0, 0, 0);
@@ -52,6 +61,8 @@ class GetScores extends Command
         $days_left = $match_day->diff($today)->days;
 
         $bar = $this->output->createProgressBar($days_left);
+
+        $fixtures = AvailableTeam::get();
 
         $leagues = League::get();
         $teams = Team::get();
@@ -111,8 +122,9 @@ class GetScores extends Command
                     $home_team_score = intval($people_data[2]);
                     $away_team_id = $away_team->id;
                     $away_team_score = intval($people_data[4]);
+                    $game_date = 
 
-                    $results[] = compact('home_team_id', 'home_team_score', 'away_team_id', 'away_team_score');
+                    $results[] = compact('home_team_id', 'home_team_score', 'away_team_id', 'away_team_score', 'game_date');
                 }
 
                 return array('data' => $new_league, 'games' => $results);
@@ -120,9 +132,7 @@ class GetScores extends Command
 
             foreach($game_data as $games)
             {
-                $date = $games['data']['date'];
                 $league = $games['data']['league'];
-
                 $league = $leagues->where('name', $league)->first();
 
                 if(!$league)
@@ -135,13 +145,35 @@ class GetScores extends Command
                 foreach($games['games'] as $game)
                 {
                     $insert_data = $game;
+                    $game_date = new Carbon($games['data']['date']);
 
-                    $date_object = new Carbon($date);
+                    // dd($game_date);
 
                     $insert_data['league_id'] = $league_id;
-                    $insert_date['game_date'] = $date_object->format('Y-m-d');
 
-                    Game::updateOrCreate(['home_team_id' => $insert_data['home_team_id'], 'away_team_id' => $insert_data['away_team_id'], 'game_date' => $insert_date['game_date']], $insert_data);
+                    if($match_day->format('d-m') !== $game_date->format('d-m'))
+                    {
+                        continue;
+                    }
+
+                    $insert_data['game_date'] = $match_day->format('Y-m-d');
+
+                    $fixture = $fixtures->where('game_date', $insert_data['game_date'])
+                        ->where('home_team_id', $insert_data['home_team_id'])
+                        ->where('away_team_id', $insert_data['away_team_id'])
+                        ->first();         
+
+                    $insert_data['fixture_id'] = null;
+                    if($fixture)
+                    {
+                        $insert_data['fixture_id'] = $fixture->id;
+                    }
+
+                    Game::updateOrCreate([
+                        'home_team_id' => $insert_data['home_team_id'], 
+                        'away_team_id' => $insert_data['away_team_id'], 
+                        'game_date' => $insert_data['game_date']
+                    ], $insert_data);
                 }
             }
 
