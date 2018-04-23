@@ -51,7 +51,6 @@
                         <div class="navbar-end">
                             @if (Auth::guest())
                                 <a class="navbar-item " href="{{ route('login') }}">Login</a>
-                                <a class="navbar-item " href="{{ route('register') }}">Register</a>
                             @else
                                 <div class="navbar-item has-dropdown is-hoverable">
                                     <a class="navbar-link" href="#">{{ Auth::user()->name }}</a>

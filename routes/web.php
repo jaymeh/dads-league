@@ -14,7 +14,7 @@ Auth::routes();
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('index');
 
 Route::get('/home', 'HomeController@index')->name('home');
 
@@ -28,3 +28,5 @@ Route::resource('picks', 'PickController')->except([
     'destroy',
     'create'
 ]);
+
+Route::get('weekly-pick/{token}', ['uses' => 'PickController@weeklyPick', 'as' => 'weekly-pick']);

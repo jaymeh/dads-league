@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Player;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -31,10 +32,14 @@ class PickReminder extends Mailable
      */
     public function build()
     {
-        $url = '';
+        $url = route('index');
+        $token_link = route('weekly-pick', ['token' => $this->token]);
+        $week_object = new Carbon('this saturday');
         return $this->markdown('emails.pick-reminder')
             ->with([
-                'url' => $url
+                'url' => $url,
+                'token_link' => $token_link,
+                'week' => $week_object->format('d/m/Y')
             ]);
     }
 }

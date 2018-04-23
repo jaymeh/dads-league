@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PickSaveRequest;
 use App\Models\Fixture;
 use App\Models\League;
+use App\Models\PickToken;
 use App\Models\Player;
 use App\Models\PlayerTeam;
 use Carbon\Carbon;
@@ -14,7 +15,8 @@ class PickController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')
+            ->except(['weeklyPick']);
     }
 
     /**
@@ -89,6 +91,91 @@ class PickController extends Controller
         //
     }
 
+    /**
+     * Weekly pick
+     */
+    public function weeklyPick($token)
+    {
+        $now = Carbon::today();
+
+        $this_saturday = new Carbon('this saturday');
+        $season = current_season();
+
+        // Find with token.
+        $player_token = PickToken::where('token', $token)
+            ->whereDate('expiry', '>=', $now)
+            ->with(['player.picks' => function($q) use ($this_saturday, $season) {
+                $q->where('game_date', '!=', $this_saturday);
+                $q->where('season_id', $season->id);
+            }])
+            ->first();
+
+        if(!$player_token)
+        {
+            // Invalid token given.
+            trigger_message('Could not find the token provided. Please contact Mark.', 'error');
+
+            return redirect()->route('index');
+        }
+
+        if(!$player_token->active)
+        {
+            // Invalid token given.
+            trigger_message('You have already picked your team this week.', 'error');
+
+            return redirect()->route('index');
+        }
+
+        $grouped_fixtures = League::with([
+                'fixtures' => function($q) use($this_saturday) {
+                    $q->whereDate('game_date', $this_saturday);
+                }
+            ])
+            ->with('fixtures.homeTeam', 'fixtures.awayTeam')
+            ->get();
+
+        $all_teams_by_league = $grouped_fixtures->map(function($league) use ($this_saturday) {
+            return $league->fixtures->where('game_date', $this_saturday->format('Y-m-d'))->map(function($teams) {
+                $team_names = [$teams->homeTeam->id => [
+                    'id' => $teams->homeTeam->id,
+                    'name' => $teams->homeTeam->name,
+                    'logo' => $teams->homeTeam->logo,
+                    'league' => $teams->homeTeam->league_id
+                ], $teams->awayTeam->id => [
+                    'id' => $teams->awayTeam->id,
+                    'name' => $teams->awayTeam->name,
+                    'logo' => $teams->awayTeam->logo,
+                    'league' => $teams->awayTeam->league_id
+                ]];
+
+                return $team_names;
+            });
+        });
+
+        $all_teams = $all_teams_by_league->flatten(2);
+
+        // dd($all_teams);
+
+        $player_picks = $player_token->player->picks;
+
+        $previous_picks_by_player = Player::with([
+            'picks' => function($q) use ($this_saturday, $season) {
+                $q->where('game_date', '!=', $this_saturday);
+                $q->where('season_id', $season->id);
+            }])
+            ->get()
+            ->mapWithKeys(function($player, $key) {
+                return [$player->id => $player->picks->pluck('id')];
+            });
+
+        // Remove anything that someone else picked.
+
+        $player = $player_token->player;
+
+        return view('content.picks.weekly')->with(compact('this_saturday', 'token', 'grouped_fixtures', 'player', 'all_teams'));
+
+        // dd($player_token);
+    }
     /**
      * Show the form for editing the specified resource.
      *

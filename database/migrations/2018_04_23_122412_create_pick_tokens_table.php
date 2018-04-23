@@ -18,6 +18,7 @@ class CreatePickTokensTable extends Migration
             $table->integer('player_id');
             $table->string('token');
             $table->dateTime('expiry');
+            $table->boolean('active');
             $table->timestamps();
         });
     }

@@ -19323,11 +19323,23 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
   margin-bottom: 0;
 }
 
+.fixture-table .team-logo {
+  width: 15%;
+}
+
+.fixture-table .team-name {
+  width: 30%;
+}
+
 @media screen and (max-width: 768px) {
   .flex-mobile {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
+  }
+
+  .fixture-table .team-name {
+    width: 45%;
   }
 }
 
