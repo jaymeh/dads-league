@@ -3,7 +3,7 @@
 use App\Models\League;
 use Illuminate\Database\Seeder;
 
-class LeagueDatabaseSeeder extends Seeder
+class LeagueTableSeeder extends Seeder
 {
 	protected $leagues = [
 		'premierleague' => 'Premier League',

@@ -24,11 +24,11 @@
             </div>
         </div>
     
-        <div class="columns is-centered is-multiline">
+        <div class="columns is-centered is-multiline" v-cloak>
             <div class="column is-12">
                 <form action="{{ route('picks.store') }}" method="POST">
                     {{ csrf_field() }}
-                    <input type="hidden" name="game_date" value="{{ $the_game_date }}">
+                    <input type="hidden" name="game_date" value="{{ $the_game_date->format('Y-m-d') }}">
                     <div class="columns is-centered is-multiline">
                         @foreach($players_with_picks as $player)
                             <div class="column is-one-third-tablet is-one-quarter-desktop">
