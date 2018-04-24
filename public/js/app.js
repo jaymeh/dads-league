@@ -42295,9 +42295,14 @@ var render = function() {
             _c("option", [_vm._v("Please Select...")]),
             _vm._v(" "),
             _vm._l(_vm.teams, function(team) {
-              return _c("option", { domProps: { value: team.id } }, [
-                _vm._v(_vm._s(team.name))
-              ])
+              return _c(
+                "option",
+                {
+                  attrs: { disabled: team.disabled },
+                  domProps: { value: team.id }
+                },
+                [_vm._v(_vm._s(team.name))]
+              )
             })
           ],
           2

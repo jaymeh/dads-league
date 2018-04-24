@@ -96,7 +96,7 @@ class PickController extends Controller
      */
     public function weeklyPick($token)
     {
-        $now = Carbon::today();
+        $now = now();
 
         $this_saturday = new Carbon('this saturday');
         $season = current_season();
@@ -126,39 +126,26 @@ class PickController extends Controller
             return redirect()->route('index');
         }
 
-        // Get the other player picks for this week.
-        $previous_picks = PlayerTeam::whereDate('game_date', $this_saturday)
-            ->get()
-            ->pluck('id');
+        $excluded_ids = PlayerTeam::teamsToExclude($player_token->player->id, $this_saturday, $season);
 
-        // Get the picks for this player in the past.
-        $previous_player_picks = PlayerTeam::where('player_id', $player_token->player->id)
-            ->where('season_id', $season->id)
-            ->get()
-            ->pluck('id');
+        $grouped_fixtures = League::withFixturesByDate($this_saturday);
 
-        dd($previous_player_picks);
+        // dd($grouped_fixtures);
 
-        $grouped_fixtures = League::with([
-                'fixtures' => function($q) use($this_saturday) {
-                    $q->whereDate('game_date', $this_saturday);
-                }
-            ])
-            ->with('fixtures.homeTeam', 'fixtures.awayTeam')
-            ->get();
-
-        $all_teams_by_league = $grouped_fixtures->map(function($league) use ($this_saturday) {
-            return $league->fixtures->where('game_date', $this_saturday->format('Y-m-d'))->map(function($teams) {
+        $all_teams_by_league = $grouped_fixtures->map(function($league) use ($this_saturday, $excluded_ids) {
+            return $league->fixtures->map(function($teams) use($excluded_ids) {
                 $team_names = [$teams->homeTeam->id => [
                     'id' => $teams->homeTeam->id,
                     'name' => $teams->homeTeam->name,
                     'logo' => $teams->homeTeam->logo,
-                    'league' => $teams->homeTeam->league_id
+                    'league' => $teams->homeTeam->league_id,
+                    'disabled' => $excluded_ids->contains($teams->homeTeam->id) ? true : false
                 ], $teams->awayTeam->id => [
                     'id' => $teams->awayTeam->id,
                     'name' => $teams->awayTeam->name,
                     'logo' => $teams->awayTeam->logo,
-                    'league' => $teams->awayTeam->league_id
+                    'league' => $teams->awayTeam->league_id,
+                    'disabled' => $excluded_ids->contains($teams->awayTeam->id) ? true : false
                 ]];
 
                 return $team_names;
@@ -179,9 +166,7 @@ class PickController extends Controller
                 return [$player->id => $player->picks->pluck('id')];
             });
 
-        dd($previous_picks_by_player);
-
-        // Remove anything that someone else picked.
+        // Disable anything that someone else picked.
 
         $player = $player_token->player;
 

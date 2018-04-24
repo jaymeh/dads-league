@@ -4,7 +4,7 @@
 			<div class="select" v-bind:class="{ 'is-danger': error }">
 				<select id="team-select" v-model="selectedTeam">
 					<option>Please Select...</option>
-					<option v-for="team in teams" :value="team.id">{{ team.name }}</option>
+					<option v-for="team in teams" :value="team.id" :disabled="team.disabled">{{ team.name }}</option>
 				</select>
 				<input type="hidden" :name="playerFieldName" v-model="selectedTeam" />
 			</div>
