@@ -126,6 +126,19 @@ class PickController extends Controller
             return redirect()->route('index');
         }
 
+        // Get the other player picks for this week.
+        $previous_picks = PlayerTeam::whereDate('game_date', $this_saturday)
+            ->get()
+            ->pluck('id');
+
+        // Get the picks for this player in the past.
+        $previous_player_picks = PlayerTeam::where('player_id', $player_token->player->id)
+            ->where('season_id', $season->id)
+            ->get()
+            ->pluck('id');
+
+        dd($previous_player_picks);
+
         $grouped_fixtures = League::with([
                 'fixtures' => function($q) use($this_saturday) {
                     $q->whereDate('game_date', $this_saturday);
@@ -154,8 +167,6 @@ class PickController extends Controller
 
         $all_teams = $all_teams_by_league->flatten(2);
 
-        // dd($all_teams);
-
         $player_picks = $player_token->player->picks;
 
         $previous_picks_by_player = Player::with([
@@ -167,6 +178,8 @@ class PickController extends Controller
             ->mapWithKeys(function($player, $key) {
                 return [$player->id => $player->picks->pluck('id')];
             });
+
+        dd($previous_picks_by_player);
 
         // Remove anything that someone else picked.
 
