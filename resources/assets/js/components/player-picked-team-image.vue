@@ -17,7 +17,8 @@
 
 		computed: {
 			team: function() {
-				return this.$store.getters['teams/getById'](this.teamId);
+				let teamId = this.$store.getters['teams/activePick'];
+				return this.$store.getters['teams/getById'](teamId);
 			},
 			logoImage: function() {
 				if(this.team)

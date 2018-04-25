@@ -42546,7 +42546,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 	computed: {
 		team: function team() {
-			return this.$store.getters['teams/getById'](this.teamId);
+			var teamId = this.$store.getters['teams/activePick'];
+			return this.$store.getters['teams/getById'](teamId);
 		},
 		logoImage: function logoImage() {
 			if (this.team) {

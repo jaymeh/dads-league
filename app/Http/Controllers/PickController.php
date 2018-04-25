@@ -84,7 +84,9 @@ class PickController extends Controller
 
         trigger_message('Successfully saved/updated this weeks picks.', 'success');
 
-        // TODO: Expire the token here
+        // TODO: Expire the token here.
+        
+        // TODO: Redirect you back to the homepage.
 
         return redirect()->back();
     }
