@@ -33,6 +33,10 @@
 	.team-name {
 		width: 30%;
 	}
+
+	.disabled {
+		opacity: 0.2;
+	}
 }
 
 @media screen and (max-width: 768px) {

@@ -19331,6 +19331,10 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
   width: 30%;
 }
 
+.fixture-table .disabled {
+  opacity: 0.2;
+}
+
 @media screen and (max-width: 768px) {
   .flex-mobile {
     display: -webkit-box;

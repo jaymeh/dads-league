@@ -4,7 +4,7 @@ var _ = require('lodash');
 const state = {
 	teams: [],
 	teamGames: [],
-	activePicks: []
+	activePick: ''
 }
 
 // getters
@@ -15,13 +15,7 @@ const getters = {
 		let teamIndex = _.findIndex(state.teams, function(o) { return o.id == teamId; });
 		return state.teams[teamIndex];
 	},
-	activePicks: state => state.activePicks,
-	getPickedTeamByPlayerId: state => (playerId) => {
-		let teamId = state.activePicks[playerId];
-		let teamIndex = _.findIndex(state.teams, function(o) { return o.id == teamId; });
-		
-		return state.teams[teamIndex];
-	}
+	activePick: state => state.activePick,
 }
 
 // actions
@@ -73,7 +67,7 @@ const mutations = {
 		store.teams[teamIndex].disabled = true;
 	},
 	addActivePick: function(store, payload) {
-		Vue.set(store.activePicks, payload.id, payload.team);
+		store.activePick = payload;
 	}
 }
 

@@ -41806,7 +41806,7 @@ var _ = __webpack_require__(3);
 var state = {
 	teams: [],
 	teamGames: [],
-	activePicks: []
+	activePick: ''
 
 	// getters
 };var getters = {
@@ -41824,18 +41824,8 @@ var state = {
 			return state.teams[teamIndex];
 		};
 	},
-	activePicks: function activePicks(state) {
-		return state.activePicks;
-	},
-	getPickedTeamByPlayerId: function getPickedTeamByPlayerId(state) {
-		return function (playerId) {
-			var teamId = state.activePicks[playerId];
-			var teamIndex = _.findIndex(state.teams, function (o) {
-				return o.id == teamId;
-			});
-
-			return state.teams[teamIndex];
-		};
+	activePick: function activePick(state) {
+		return state.activePick;
 	}
 
 	// actions
@@ -41893,7 +41883,7 @@ var state = {
 		store.teams[teamIndex].disabled = true;
 	},
 	addActivePick: function addActivePick(store, payload) {
-		Vue.set(store.activePicks, payload.id, payload.team);
+		store.activePick = payload;
 	}
 };
 
@@ -42177,9 +42167,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['playerId', 'teamId', 'messageError'],
+	props: ['playerId', 'teamId', 'messageError', 'activePick'],
 
 	data: function data() {
 		return {
@@ -42191,7 +42193,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 	computed: {
 		teams: function teams() {
-			return this.$store.getters['teams/teams'];
+			var teams = this.$store.getters['teams/teams'];
+
+			var grouped = _(teams).groupBy('league_name').map(function (leagueGrouping, key) {
+				return {
+					'key': key,
+					'teams': leagueGrouping
+				};
+			}).valueOf();
+
+			// console.log(grouped);
+			// Group with parent
+			return grouped;
 		},
 		playerFieldName: function playerFieldName() {
 			return 'players[' + this.player + ']';
@@ -42224,54 +42237,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	methods: {},
 
 	mounted: function mounted() {
-		var _this2 = this;
-
-		if (this.selectedTeam) {
-			// Update the disabled team based on the games
-			this.$store.commit('teams/addActivePick', {
-				id: this.playerId,
-				team: parseInt(this.selectedTeam)
-			});
-			this.$store.commit('teams/disableTeam', this.selectedTeam);
-
-			// Flag error if already picked before.
-			var picks = this.$store.getters['picks/getPicksByPlayer'](this.playerId);
-
-			var alreadyPickedMatch = _.findIndex(picks, function (pick) {
-				return _this2.selectedTeam == pick;
-			});
-
-			if (alreadyPickedMatch > -1) {
-				this.error = 'This team has already been picked in the past.';
-			}
-		}
+		// Update the disabled team based on the games
+		this.$store.commit('teams/addActivePick', this.selectedTeam);
 	},
 
 	components: {},
 
 	watch: {
 		selectedTeam: function selectedTeam() {
-			var _this3 = this;
-
-			this.error = '';
-
-			// Update the disabled team based on the games
-			this.$store.commit('teams/addActivePick', {
-				id: this.playerId,
-				team: this.selectedTeam
-			});
-			this.$store.commit('teams/disableTeam', this.selectedTeam);
-
-			// Flag error if already picked before.
-			var picks = this.$store.getters['picks/getPicksByPlayer'](this.playerId);
-
-			var alreadyPickedMatch = _.findIndex(picks, function (pick) {
-				return _this3.selectedTeam == pick;
-			});
-
-			if (alreadyPickedMatch > -1) {
-				this.error = 'This team has already been picked in the past.';
-			}
+			this.$store.commit('teams/addActivePick', this.selectedTeam);
 		}
 	}
 });
@@ -42284,85 +42258,103 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "field" }, [
-    _c("div", { staticClass: "control" }, [
-      _c("div", { staticClass: "select", class: { "is-danger": _vm.error } }, [
+  return _c("div", [
+    _c("div", { staticClass: "field" }, [
+      _c("div", { staticClass: "control" }, [
         _c(
-          "select",
-          {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.selectedTeam,
-                expression: "selectedTeam"
-              }
-            ],
-            attrs: { id: "team-select", name: "pick" },
-            on: {
-              change: function($event) {
-                var $$selectedVal = Array.prototype.filter
-                  .call($event.target.options, function(o) {
-                    return o.selected
-                  })
-                  .map(function(o) {
-                    var val = "_value" in o ? o._value : o.value
-                    return val
-                  })
-                _vm.selectedTeam = $event.target.multiple
-                  ? $$selectedVal
-                  : $$selectedVal[0]
-              }
-            }
-          },
+          "div",
+          { staticClass: "select", class: { "is-danger": _vm.error } },
           [
-            _c("option", [_vm._v("Please Select...")]),
+            _c(
+              "select",
+              {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.selectedTeam,
+                    expression: "selectedTeam"
+                  }
+                ],
+                attrs: { id: "team-select" },
+                on: {
+                  change: function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.selectedTeam = $event.target.multiple
+                      ? $$selectedVal
+                      : $$selectedVal[0]
+                  }
+                }
+              },
+              [
+                _c("option", [_vm._v("Please Select...")]),
+                _vm._v(" "),
+                _vm._l(_vm.teams, function(league, key) {
+                  return _c(
+                    "optgroup",
+                    { key: key, attrs: { label: league.key } },
+                    _vm._l(league.teams, function(team) {
+                      return _c(
+                        "option",
+                        {
+                          attrs: { disabled: team.disabled },
+                          domProps: { value: team.id, selected: _vm.activePick }
+                        },
+                        [_vm._v(_vm._s(team.name))]
+                      )
+                    })
+                  )
+                })
+              ],
+              2
+            ),
             _vm._v(" "),
-            _vm._l(_vm.teams, function(team) {
-              return _c(
-                "option",
-                {
-                  attrs: { disabled: team.disabled },
-                  domProps: { value: team.id }
-                },
-                [_vm._v(_vm._s(team.name))]
-              )
+            _c("input", {
+              attrs: { type: "hidden", name: "pick" },
+              domProps: { value: _vm.selectedTeam }
+            }),
+            _vm._v(" "),
+            _c("input", {
+              attrs: { type: "hidden", name: "fixture" },
+              domProps: { value: _vm.fixtureId }
             })
-          ],
-          2
+          ]
         ),
         _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.fixtureId,
-              expression: "fixtureId"
-            }
-          ],
-          attrs: { type: "hidden", name: _vm.fixtureId },
-          domProps: { value: _vm.fixtureId },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.fixtureId = $event.target.value
-            }
-          }
-        })
-      ]),
-      _vm._v(" "),
-      _vm.error
-        ? _c("p", { staticClass: "help is-danger" }, [
-            _vm._v(_vm._s(_vm.error))
-          ])
-        : _vm._e()
-    ])
+        _vm.error
+          ? _c("p", { staticClass: "help is-danger" }, [
+              _vm._v(_vm._s(_vm.error))
+            ])
+          : _vm._e()
+      ])
+    ]),
+    _vm._v(" "),
+    _vm._m(0)
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "field" }, [
+      _c("div", { staticClass: "control has-text-centered" }, [
+        _c(
+          "button",
+          { staticClass: "button is-success", attrs: { type: "submit" } },
+          [_vm._v("Save")]
+        )
+      ])
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -42542,7 +42534,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	props: {
-		'playerId': ''
+		'playerId': '',
+		teamId: ''
 	},
 
 	data: function data() {
@@ -42553,7 +42546,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 	computed: {
 		team: function team() {
-			return this.$store.getters['teams/getPickedTeamByPlayerId'](this.playerId);
+			return this.$store.getters['teams/getById'](this.teamId);
 		},
 		logoImage: function logoImage() {
 			if (this.team) {

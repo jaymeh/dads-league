@@ -24,6 +24,8 @@
 					@include('partials.picks.pick-card')
 				</div>
 			</div>
+
+
         </form>
     </div>
 
@@ -37,7 +39,7 @@
 				<div class="columns is-marginless is-centered is-multiline">
 					<div class="column">
 						
-						<table class="table is-fullwidth is-hoverable is-striped fixture-table">
+						<table class="table is-fullwidth is-striped fixture-table">
                             <thead>
                                 <tr>
                                     <th class="text-center is-hidden-mobile">&nbsp;</th>
@@ -49,7 +51,7 @@
                             </thead>
                             <tbody>
                                 @foreach($league->fixtures as $fixture)
-                                    <tr>
+                                    <tr class="{{ $fixture->disabled ? 'disabled' : '' }}">
                                         <td class="text-center is-hidden-mobile team-logo"><img class="logo-small" src="{{ $fixture->homeTeam->logo }}" alt="{{ $fixture->homeTeam->name }} logo" /></td>
                                         <td class="text-center team-name">{{ $fixture->homeTeam->name }}</td>
                                         <td class="text-center">v</td>

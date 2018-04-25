@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class PlayerTeam extends Model
 {
 	protected $fillable = [
+		'season_id',
 		'player_id',
-		'game_date',
+		'fixture_id',
 		'team_id',
-		'season_id'
+		'game_date'
 	];
 
 	/**
@@ -35,7 +36,7 @@ class PlayerTeam extends Model
 
 	public static function scopeThisWeeksTeams($query, Carbon $date)
 	{
-		return $query->whereDate('game_date', $date)
+		return $query
             ->get()
             ->pluck('team_id');
 	}
@@ -55,18 +56,36 @@ class PlayerTeam extends Model
 
 	public static function scopeTeamsToExclude($query, $player_id, Carbon $game_date, $season = null)
 	{
-		// Get the other player picks for this week.
-        $previous_picks = $query->thisWeeksTeams($game_date);
+		if(!$season)
+		{
+			$season = current_season();
+		}
 
-        // Get the picks for this player in the past.
-        $previous_player_picks = $query->teamsByPlayer($player_id, $season);
-
-        return $previous_picks->merge($previous_player_picks)->unique();
+		return $query->with('fixture')
+			->where(function($q) use($game_date) {
+				$q->whereDate('game_date', $game_date);
+			})
+			->orWhere(function($q) use($player_id, $season) {
+				$q
+					->where('player_id', $player_id)
+            		->where('season_id', $season->id);
+			})
+			->get()
+			->map(function($result) {
+				return !$result->fixture ? $result->team_id : [$result->fixture->home_team_id, $result->fixture->away_team_id];
+			})
+			->flatten()
+			->unique();
 	}
 
 	public function season()
 	{
 		return $this->belongsTo(Season::class);
+	}
+
+	public function fixture()
+	{
+		return $this->belongsTo(Fixture::class);
 	}
 
 	public function team()

@@ -1,16 +1,28 @@
 <template>
-	<div class="field">
-		<div class="control">
-			<div class="select" v-bind:class="{ 'is-danger': error }">
-				<select id="team-select" name="pick" v-model="selectedTeam">
-					<option>Please Select...</option>
-					<option v-for="team in teams" :value="team.id" :disabled="team.disabled">{{ team.name }}</option>
-				</select>
-				<input type="hidden" :name="fixtureId" v-model="fixtureId" />
+	<div>
+		<div class="field">
+			<div class="control">
+				<div class="select" v-bind:class="{ 'is-danger': error }">
+					<select id="team-select" v-model="selectedTeam">
+						<option>Please Select...</option>
+						<optgroup v-for="(league, key) in teams" :label="league.key" :key="key">
+							<option v-for="team in league.teams" :value="team.id" :disabled="team.disabled" :selected="activePick">{{ team.name }}</option>
+						</optgroup>
+					</select>
+					<input type="hidden" name="pick" :value="selectedTeam" />
+					<input type="hidden" name="fixture" :value="fixtureId" />
+				</div>
+				<p class="help is-danger" v-if="error">{{ error }}</p>
 			</div>
-			<p class="help is-danger" v-if="error">{{ error }}</p>
+			
+		</div>
+		<div class="field">
+			<div class="control has-text-centered">
+				<button type="submit" class="button is-success">Save</button>
+			</div>
 		</div>
 	</div>
+	
 </template>
 
 <script>
@@ -18,7 +30,8 @@
 		props: [
 			'playerId',
 			'teamId',
-			'messageError'
+			'messageError',
+			'activePick'
 		],
 
 		data: function() {
@@ -31,7 +44,18 @@
 
 		computed: {
 			teams: function() {
-				return this.$store.getters['teams/teams'];
+				let teams = this.$store.getters['teams/teams'];
+
+				let grouped = _(teams).groupBy('league_name').map((leagueGrouping, key) => {
+					return {
+						'key': key,
+						'teams': leagueGrouping
+					};
+				}).valueOf();
+
+				// console.log(grouped);
+				// Group with parent
+				return grouped;
 			},
 			playerFieldName: function() {
 				return 'players[' + this.player + ']';
@@ -68,49 +92,15 @@
 		},
 
 		mounted: function () {
-			if(this.selectedTeam)
-			{
-				// Update the disabled team based on the games
-				this.$store.commit('teams/addActivePick', {
-					id: this.playerId, 
-					team: parseInt(this.selectedTeam)
-				});
-				this.$store.commit('teams/disableTeam', this.selectedTeam);
-
-				// Flag error if already picked before.
-				let picks = this.$store.getters['picks/getPicksByPlayer'](this.playerId);
-
-				let alreadyPickedMatch = _.findIndex(picks, pick => { return this.selectedTeam == pick });
-
-				if(alreadyPickedMatch > -1)
-				{
-					this.error = 'This team has already been picked in the past.';
-				}
-			}
+			// Update the disabled team based on the games
+			this.$store.commit('teams/addActivePick', this.selectedTeam);
 		},
 
 		components: {},
 
 		watch: {
 			selectedTeam: function() {
-				this.error = '';
-
-				// Update the disabled team based on the games
-				this.$store.commit('teams/addActivePick', {
-					id: this.playerId, 
-					team:this.selectedTeam
-				});
-				this.$store.commit('teams/disableTeam', this.selectedTeam);
-
-				// Flag error if already picked before.
-				let picks = this.$store.getters['picks/getPicksByPlayer'](this.playerId);
-
-				let alreadyPickedMatch = _.findIndex(picks, pick => { return this.selectedTeam == pick });
-
-				if(alreadyPickedMatch > -1)
-				{
-					this.error = 'This team has already been picked in the past.';
-				}
+				this.$store.commit('teams/addActivePick', this.selectedTeam);
 			}
 		}
 	};

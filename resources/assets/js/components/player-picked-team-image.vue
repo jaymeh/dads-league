@@ -5,7 +5,8 @@
 <script>
 	export default {
 		props: {
-			'playerId': ''
+			'playerId': '',
+			teamId: ''
 		},
 
 		data: function() {
@@ -16,7 +17,7 @@
 
 		computed: {
 			team: function() {
-				return this.$store.getters['teams/getPickedTeamByPlayerId'](this.playerId);
+				return this.$store.getters['teams/getById'](this.teamId);
 			},
 			logoImage: function() {
 				if(this.team)

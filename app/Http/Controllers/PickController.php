@@ -16,7 +16,7 @@ class PickController extends Controller
     public function __construct()
     {
         $this->middleware('auth')
-            ->except(['weeklyPick']);
+            ->except(['weeklyPick', 'store']);
     }
 
     /**
@@ -57,25 +57,34 @@ class PickController extends Controller
      */
     public function store(PickSaveRequest $request)
     {
-        $picks = $request->players;
+        // Verify token.
+        $token_player = PickToken::whereDate('expiry', '>=', now())
+            ->where('token', $request->player_token)
+            ->first();
+
+        if(!$token_player)
+        {
+            trigger_message('Couldn\'t verify this player. Please try again.');
+            return back()->withInput();
+        }
+
         $date = $request->game_date;
 
         // Get current season.
         $season = current_season();
-
-        // Loop through all the picks + save them
-        foreach($picks as $player_id => $pick)
-        {
-            $existing_pick = PlayerTeam::updateOrCreate([
-                'player_id' => $player_id, 
-                'game_date' => $date,
-                'season_id' => $season->id
-            ], [
-                'team_id' => $pick
-            ]);
-        }
+        
+        $pick = PlayerTeam::updateOrCreate([
+            'player_id' => $token_player->player_id, 
+            'game_date' => $date,
+            'season_id' => $season->id
+        ], [
+            'fixture_id' => $request->fixture,
+            'team_id' => $request->pick
+        ]);
 
         trigger_message('Successfully saved/updated this weeks picks.', 'success');
+
+        // TODO: Expire the token here
 
         return redirect()->back();
     }
@@ -126,9 +135,11 @@ class PickController extends Controller
             return redirect()->route('index');
         }
 
-        $excluded_ids = PlayerTeam::teamsToExclude($player_token->player->id, $this_saturday, $season);
+        $player = $player_token->player;
 
-        $grouped_fixtures = League::withFixturesByDate($this_saturday);
+        $excluded_ids = PlayerTeam::teamsToExclude($player->id, $this_saturday, $season);
+
+        $grouped_fixtures = League::withFixturesByDate($this_saturday, $excluded_ids);
 
         $fixtures = $grouped_fixtures->mapWithKeys(function($league) {
             return $league->fixtures->mapWithKeys(function($fixture) {
@@ -136,21 +147,21 @@ class PickController extends Controller
             });
         });
 
-        // dd($grouped_fixtures);
-
         $all_teams_by_league = $grouped_fixtures->map(function($league) use ($this_saturday, $excluded_ids) {
-            return $league->fixtures->map(function($teams) use($excluded_ids) {
+            return $league->fixtures->map(function($teams) use($excluded_ids, $league) {
                 $team_names = [$teams->homeTeam->id => [
                     'id' => $teams->homeTeam->id,
                     'name' => $teams->homeTeam->name,
                     'logo' => $teams->homeTeam->logo,
                     'league' => $teams->homeTeam->league_id,
+                    'league_name' => $league->name,
                     'disabled' => $excluded_ids->contains($teams->homeTeam->id) ? true : false
                 ], $teams->awayTeam->id => [
                     'id' => $teams->awayTeam->id,
                     'name' => $teams->awayTeam->name,
                     'logo' => $teams->awayTeam->logo,
                     'league' => $teams->awayTeam->league_id,
+                    'league_name' => $league->name,
                     'disabled' => $excluded_ids->contains($teams->awayTeam->id) ? true : false
                 ]];
 
@@ -160,23 +171,17 @@ class PickController extends Controller
 
         $all_teams = $all_teams_by_league->flatten(2);
 
-        $player_picks = $player_token->player->picks;
-
-        $previous_picks_by_player = Player::with([
-            'picks' => function($q) use ($this_saturday, $season) {
-                $q->where('game_date', '!=', $this_saturday);
-                $q->where('season_id', $season->id);
-            }])
-            ->get()
-            ->mapWithKeys(function($player, $key) {
-                return [$player->id => $player->picks->pluck('id')];
-            });
-
         // Disable anything that someone else picked.
 
-        $player = $player_token->player;
+        $active_pick = PlayerTeam::select('team_id')
+            ->whereDate('game_date', $this_saturday)
+            ->where('player_id', $player->id)
+            ->first();
+            // ->pluck('team_id');
 
-        return view('content.picks.weekly')->with(compact('this_saturday', 'token', 'grouped_fixtures', 'player', 'all_teams', 'fixtures'));
+        // dd($active_pick);
+
+        return view('content.picks.weekly')->with(compact('this_saturday', 'token', 'grouped_fixtures', 'player', 'all_teams', 'fixtures', 'active_pick'));
 
         // dd($player_token);
     }

@@ -15,8 +15,10 @@ class CreatePlayerTeamsTable extends Migration
     {
         Schema::create('player_teams', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('team_id');
+            $table->integer('season_id');
             $table->integer('player_id');
+            $table->integer('fixture_id');
+            $table->integer('team_id');
             $table->date('game_date');
             $table->timestamps();
         });
