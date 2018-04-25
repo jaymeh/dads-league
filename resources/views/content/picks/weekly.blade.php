@@ -3,6 +3,7 @@
 @section('content')
 	{{-- {{ dd($all_teams) }} --}}
 	<vue-loader namespace="teams" :value="{{ $all_teams->toJson() }}"></vue-loader>
+    <vue-loader namespace="fixtures" :value="{{ $fixtures->toJson() }}"></vue-loader>
 
 	<div class="container">
         <div class="columns is-marginless is-centered is-multiline">

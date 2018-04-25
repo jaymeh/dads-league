@@ -130,6 +130,12 @@ class PickController extends Controller
 
         $grouped_fixtures = League::withFixturesByDate($this_saturday);
 
+        $fixtures = $grouped_fixtures->mapWithKeys(function($league) {
+            return $league->fixtures->mapWithKeys(function($fixture) {
+                return [$fixture->id => [$fixture->homeTeam->id, $fixture->awayTeam->id]];
+            });
+        });
+
         // dd($grouped_fixtures);
 
         $all_teams_by_league = $grouped_fixtures->map(function($league) use ($this_saturday, $excluded_ids) {
@@ -170,7 +176,7 @@ class PickController extends Controller
 
         $player = $player_token->player;
 
-        return view('content.picks.weekly')->with(compact('this_saturday', 'token', 'grouped_fixtures', 'player', 'all_teams'));
+        return view('content.picks.weekly')->with(compact('this_saturday', 'token', 'grouped_fixtures', 'player', 'all_teams', 'fixtures'));
 
         // dd($player_token);
     }

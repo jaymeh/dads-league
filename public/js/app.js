@@ -41778,6 +41778,8 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_teams__ = __webpack_require__(40);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_picks__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modules_fixtures__ = __webpack_require__(73);
+
 
 
 
@@ -41788,7 +41790,8 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
 /* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
   modules: {
     teams: __WEBPACK_IMPORTED_MODULE_2__modules_teams__["a" /* default */],
-    picks: __WEBPACK_IMPORTED_MODULE_3__modules_picks__["a" /* default */]
+    picks: __WEBPACK_IMPORTED_MODULE_3__modules_picks__["a" /* default */],
+    fixtures: __WEBPACK_IMPORTED_MODULE_4__modules_fixtures__["a" /* default */]
   }
 }));
 
@@ -42192,13 +42195,36 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		playerFieldName: function playerFieldName() {
 			return 'players[' + this.player + ']';
+		},
+		fixtureId: function fixtureId() {
+			var _this = this;
+
+			var fixtures = this.$store.getters['fixtures/fixtures'];
+
+			var selected = 0;
+
+			_.each(fixtures, function (fixture, fixtureId) {
+				var index = _.findIndex(fixture, function (team) {
+					return team == _this.selectedTeam;
+				});
+
+				if (index > -1) {
+					selected = fixtureId;
+				}
+			});
+
+			if (selected) {
+				return selected;
+			} else {
+				return null;
+			}
 		}
 	},
 
 	methods: {},
 
 	mounted: function mounted() {
-		var _this = this;
+		var _this2 = this;
 
 		if (this.selectedTeam) {
 			// Update the disabled team based on the games
@@ -42212,7 +42238,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var picks = this.$store.getters['picks/getPicksByPlayer'](this.playerId);
 
 			var alreadyPickedMatch = _.findIndex(picks, function (pick) {
-				return _this.selectedTeam == pick;
+				return _this2.selectedTeam == pick;
 			});
 
 			if (alreadyPickedMatch > -1) {
@@ -42225,7 +42251,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 	watch: {
 		selectedTeam: function selectedTeam() {
-			var _this2 = this;
+			var _this3 = this;
 
 			this.error = '';
 
@@ -42239,10 +42265,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			// Flag error if already picked before.
 			var picks = this.$store.getters['picks/getPicksByPlayer'](this.playerId);
 
-			console.log(picks);
-
 			var alreadyPickedMatch = _.findIndex(picks, function (pick) {
-				return _this2.selectedTeam == pick;
+				return _this3.selectedTeam == pick;
 			});
 
 			if (alreadyPickedMatch > -1) {
@@ -42274,7 +42298,7 @@ var render = function() {
                 expression: "selectedTeam"
               }
             ],
-            attrs: { id: "team-select" },
+            attrs: { id: "team-select", name: "pick" },
             on: {
               change: function($event) {
                 var $$selectedVal = Array.prototype.filter
@@ -42313,18 +42337,18 @@ var render = function() {
             {
               name: "model",
               rawName: "v-model",
-              value: _vm.selectedTeam,
-              expression: "selectedTeam"
+              value: _vm.fixtureId,
+              expression: "fixtureId"
             }
           ],
-          attrs: { type: "hidden", name: _vm.playerFieldName },
-          domProps: { value: _vm.selectedTeam },
+          attrs: { type: "hidden", name: _vm.fixtureId },
+          domProps: { value: _vm.fixtureId },
           on: {
             input: function($event) {
               if ($event.target.composing) {
                 return
               }
-              _vm.selectedTeam = $event.target.value
+              _vm.fixtureId = $event.target.value
             }
           }
         })
@@ -44892,6 +44916,56 @@ return Tagify;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 69 */,
+/* 70 */,
+/* 71 */,
+/* 72 */,
+/* 73 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var _ = __webpack_require__(3);
+
+// initial state
+var state = {
+	fixtures: []
+
+	// getters
+};var getters = {
+	fixtures: function fixtures(state) {
+		return state.fixtures;
+	},
+	fixtureById: function fixtureById(state) {
+		return function (fixtureId) {
+			return state.fixtures[fixtureId];
+		};
+	}
+
+	// actions
+};var actions = {
+	load: function load(_ref, fixtures) {
+		var commit = _ref.commit;
+
+		commit('load', fixtures);
+	}
+
+	// mutations
+};var mutations = {
+	load: function load(store, fixtures) {
+		Vue.set(store, 'fixtures', fixtures);
+	}
+};
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+	namespaced: true,
+
+	state: state,
+	getters: getters,
+	actions: actions,
+	mutations: mutations
+});
 
 /***/ })
 /******/ ]);

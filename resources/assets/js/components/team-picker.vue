@@ -2,11 +2,11 @@
 	<div class="field">
 		<div class="control">
 			<div class="select" v-bind:class="{ 'is-danger': error }">
-				<select id="team-select" v-model="selectedTeam">
+				<select id="team-select" name="pick" v-model="selectedTeam">
 					<option>Please Select...</option>
 					<option v-for="team in teams" :value="team.id" :disabled="team.disabled">{{ team.name }}</option>
 				</select>
-				<input type="hidden" :name="playerFieldName" v-model="selectedTeam" />
+				<input type="hidden" :name="fixtureId" v-model="fixtureId" />
 			</div>
 			<p class="help is-danger" v-if="error">{{ error }}</p>
 		</div>
@@ -35,6 +35,31 @@
 			},
 			playerFieldName: function() {
 				return 'players[' + this.player + ']';
+			},
+			fixtureId: function() {
+				var fixtures = this.$store.getters['fixtures/fixtures'];
+
+				let selected = 0;
+
+				_.each(fixtures, (fixture, fixtureId) => {
+					let index = _.findIndex(fixture, (team) => {
+						return team == this.selectedTeam
+					});
+
+					if(index > -1)
+					{
+						selected = fixtureId;
+					}
+				})
+
+				if(selected)
+				{
+					return selected;
+				}
+				else
+				{
+					return null;
+				}
 			}
 		},
 
@@ -79,8 +104,6 @@
 
 				// Flag error if already picked before.
 				let picks = this.$store.getters['picks/getPicksByPlayer'](this.playerId);
-
-				console.log(picks);
 
 				let alreadyPickedMatch = _.findIndex(picks, pick => { return this.selectedTeam == pick });
 
