@@ -22,6 +22,7 @@ Route::resource('players', 'PlayerController')->except([
     'show'
 ]);
 
+// TODO: Clean this up since it's not a resource anymore.
 Route::resource('picks', 'PickController')->except([
     'show',
     'update',

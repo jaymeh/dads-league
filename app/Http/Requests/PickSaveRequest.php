@@ -6,6 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class PickSaveRequest extends FormRequest
 {
+    // TODO: Add extra validation to make sure someone can't pick the same team twice.
+    
     /**
      * Determine if the user is authorized to make this request.
      *
