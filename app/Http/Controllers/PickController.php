@@ -29,6 +29,8 @@ class PickController extends Controller
         $season->load('picks.player', 'picks.fixture.homeTeam', 'picks.fixture.awayTeam');
         $picks = $season->picks;
 
+        // TODO: Add any extra calculations in for showing a list of fixtures with player name next to it.
+
         $next_date = new Carbon('this saturday');
 
         $has_picks = $picks->where('game_date', $next_date);
