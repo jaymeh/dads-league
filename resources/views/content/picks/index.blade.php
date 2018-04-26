@@ -18,7 +18,7 @@
 					<article class="media">
 						<div class="media-content">
 							<div class="content">
-								<h2>Picks - <a href="{{ route('picks.edit', $this_week_selection) }}">This Week</a></h2>
+								<h2>Picks - <a href="">This Week</a></h2>
 								<div class="columns is-multiline is-mobile no-mb">
 									<div class="column">
 										No picks for this week have been set.

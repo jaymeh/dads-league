@@ -15,8 +15,6 @@ class PickController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')
-            ->except(['weeklyPick', 'store']);
     }
 
     /**
@@ -28,7 +26,7 @@ class PickController extends Controller
     {
         // Get all the picks, this season... and group them.
         $season = current_season();
-        $season->load('picks.player');
+        $season->load('picks.player', 'picks.fixture.homeTeam', 'picks.fixture.awayTeam');
         $picks = $season->picks;
 
         $next_date = new Carbon('this saturday');
@@ -84,11 +82,10 @@ class PickController extends Controller
 
         trigger_message('Successfully saved/updated this weeks picks.', 'success');
 
-        // TODO: Expire the token here.
-        
-        // TODO: Redirect you back to the homepage.
+        $token_player->expiry = now();
+        $token_player->save();
 
-        return redirect()->back();
+        return redirect()->route('index');
     }
 
     /**
@@ -186,67 +183,5 @@ class PickController extends Controller
         return view('content.picks.weekly')->with(compact('this_saturday', 'token', 'grouped_fixtures', 'player', 'all_teams', 'fixtures', 'active_pick'));
 
         // dd($player_token);
-    }
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($the_game_date)
-    {
-        $the_game_date = new Carbon($the_game_date);
-        $leagues_with_teams = League::whereHas('fixtures', function($query) use ($the_game_date) {
-                $query->where('game_date', $the_game_date);
-            })
-            ->with('fixtures.homeTeam','fixtures.awayTeam')
-            ->orderBy('position')
-            ->get();
-
-        $season = current_season();
-
-        $all_teams_by_league = $leagues_with_teams->map(function($league) {
-
-            return $league->fixtures->map(function($teams) {
-                $team_names = [$teams->homeTeam->id => [
-                    'id' => $teams->homeTeam->id,
-                    'name' => $teams->homeTeam->name,
-                    'logo' => $teams->homeTeam->logo,
-                    'league' => $teams->homeTeam->league_id
-                ], $teams->awayTeam->id => [
-                    'id' => $teams->awayTeam->id,
-                    'name' => $teams->awayTeam->name,
-                    'logo' => $teams->awayTeam->logo,
-                    'league' => $teams->awayTeam->league_id
-                ]];
-
-                return $team_names;
-            });
-        });
-
-        $all_teams = $all_teams_by_league->flatten(2);
-
-        $players_with_picks = Player::with(['picks' => function($q) use ($the_game_date) {
-                $q->where('game_date', $the_game_date);
-            }])
-            ->get();
-
-        $player_existing_picks = $players_with_picks
-            ->mapWithKeys(function($player, $key) {
-                return [$player->id => $player->picks->pluck('id')->first()];
-            });
-
-        $previous_picks_by_player = Player::with([
-            'picks' => function($q) use ($the_game_date, $season) {
-                $q->where('game_date', '!=', $the_game_date);
-                $q->where('season_id', $season->id);
-            }])
-            ->get()
-            ->mapWithKeys(function($player, $key) {
-                return [$player->id => $player->picks->pluck('id')];
-            });
-
-        return view('content.picks.edit')
-            ->with(compact('leagues_with_teams', 'all_teams', 'the_game_date', 'players_with_picks', 'previous_picks_by_player', 'player_existing_picks'));
     }
 }

@@ -2,7 +2,7 @@
 	<article class="media">
 		<div class="media-content">
 			<div class="content">
-				<h2>Picks - <a href="{{ route('picks.edit', $date) }}">{{ $date }}</a></h2>
+				<h2>Picks - <a href="">{{ $date }}</a></h2>
 				
 				<div class="columns is-multiline is-mobile no-mb">
 					@forelse($picks as $pick)

@@ -26,7 +26,8 @@ Route::resource('picks', 'PickController')->except([
     'show',
     'update',
     'destroy',
-    'create'
+    'create',
+    'edit'
 ]);
 
-Route::get('weekly-pick/{token}', ['uses' => 'PickController@weeklyPick', 'as' => 'weekly-pick']);
+Route::get('picks/weekly/{token}', ['uses' => 'PickController@weeklyPick', 'as' => 'weekly-pick']);
