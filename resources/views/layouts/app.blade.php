@@ -38,13 +38,14 @@
                                     <a class="navbar-link" href="#">Administration</a>
 
                                     <div class="navbar-dropdown">
-                                        <a class="navbar-item" href="{{ route('picks.index') }}">Picks</a>
                                         <a class="navbar-item" href="{{ route('login') }}">Tables</a>
                                         <a class="navbar-item" href="{{ route('players.index') }}">Players</a>
                                     </div>
                                 </div>
                                 
                             @endif
+
+                            <a class="navbar-item" href="{{ route('picks.index') }}">Picks</a>
 
                         </div>
                         
