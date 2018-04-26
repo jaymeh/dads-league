@@ -13,23 +13,7 @@
 
 	<div class="section">
 		<div class="container">
-			@if($this_week_selection)
-				<div class="box">
-					<article class="media">
-						<div class="media-content">
-							<div class="content">
-								<h2>Picks - <a href="">This Week</a></h2>
-								<div class="columns is-multiline is-mobile no-mb">
-									<div class="column">
-										No picks for this week have been set.
-									</div>
-								</div>
-							</div>
-						</div>
-					</article>
-				</div>
-			@endif
-			@foreach($picks_by_date as $date => $picks)
+			@foreach($fixtures_by_player_teams as $date => $fixture)
 				@include('partials.picks.list-item')
 			@endforeach
 		</div>

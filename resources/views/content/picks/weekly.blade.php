@@ -24,8 +24,6 @@
 					@include('partials.picks.pick-card')
 				</div>
 			</div>
-
-
         </form>
     </div>
 

@@ -19335,6 +19335,18 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
   opacity: 0.2;
 }
 
+.fixture-table tr.is-success {
+  background-color: #23d160;
+}
+
+.fixture-table tr.is-warning {
+  background-color: #ffdd57;
+}
+
+.fixture-table tr.is-danger {
+  background-color: #ff3860;
+}
+
 @media screen and (max-width: 768px) {
   .flex-mobile {
     display: -webkit-box;

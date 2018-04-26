@@ -78,6 +78,83 @@ class PlayerTeam extends Model
 			->unique();
 	}
 
+	public function getGameStatusAttribute()
+	{
+		// dd('gothere');
+		if($this->fixture->game)
+		{
+			$game = $this->fixture->game;
+
+			if(!$game)
+			{
+				return false;
+			}
+
+			$status = '';
+			$home_score = $game->home_team_score;
+			$away_score = $game->away_team_score;
+
+			if($home_score == $away_score)
+			{
+				$status = 'Draw';
+			}
+			elseif($home_score < $away_score && $this->team_id == $game->home_team_id)
+			{
+				$status = 'Lose';
+			}
+			elseif($home_score > $away_score && $this->team_id == $game->home_team_id)
+			{
+				$status = 'Win';
+			}
+			elseif($home_score > $away_score && $this->team_id == $game->away_team_id)
+			{
+				$status = 'Lose';
+			}
+			elseif($home_score < $away_score && $this->team_id == $game->away_team_id)
+			{
+				$status = 'Win';
+			}
+
+			return $status;
+		}
+
+		return false;
+	}
+
+	public function getGameStatusClassAttribute()
+	{
+		$map = [
+			'Win' => 'is-success',
+			'Lose' => 'is-danger',
+			'Draw' => 'is-warning'
+		];
+
+		$status = $this->gameStatus;
+
+		if(!isset($map[$status]))
+		{
+			return '';
+		}
+
+		return $map[$status];
+	}
+
+	private function getGameStatusClass($status)
+	{
+		$map = [
+			'Win' => 'is-success',
+			'Lose' => 'is-danger',
+			'Draw' => 'is-warning'
+		];
+
+		if(!isset($map[$status]))
+		{
+			return '';
+		}
+
+		return $map[$status];
+	}
+
 	public function season()
 	{
 		return $this->belongsTo(Season::class);

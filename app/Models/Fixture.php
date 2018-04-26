@@ -13,6 +13,8 @@ class Fixture extends Model
     	'game_date'
     ];
 
+    protected $dates = ['game_date'];
+
     public function league()
     {
     	return $this->belongsTo(League::class, 'league_id', 'id');
@@ -26,6 +28,11 @@ class Fixture extends Model
     public function awayTeam()
     {
     	return $this->hasOne(Team::class, 'id', 'away_team_id');
+    }
+
+    public function playerTeam()
+    {
+        return $this->hasMany(PlayerTeam::class);
     }
 
     public function game()

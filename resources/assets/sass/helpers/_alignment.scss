@@ -37,6 +37,18 @@
 	.disabled {
 		opacity: 0.2;
 	}
+
+	tr.is-success {
+		background-color: $success;
+	}
+
+	tr.is-warning {
+		background-color: $warning;
+	}
+
+	tr.is-danger {
+		background-color: $danger;
+	}
 }
 
 @media screen and (max-width: 768px) {

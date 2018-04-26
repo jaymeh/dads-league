@@ -24,29 +24,19 @@ class PickController extends Controller
      */
     public function index(Request $request)
     {
-        // Get all the picks, this season... and group them.
-        $season = current_season();
-        $season->load('picks.player', 'picks.fixture.homeTeam', 'picks.fixture.awayTeam');
-        $picks = $season->picks;
+        // Get fixtures for this week wherehas and with player teams
+        $fixtures_by_player_teams = Fixture::whereHas('playerTeam')
+            ->with('playerTeam.player', 'game')
+            ->get()
+            ->sortByDesc('game_date')
+            ->groupBy(function($fixture) {
+                return $fixture->game_date->timestamp > now()->timestamp ? 'This Week' : $fixture->game_date->format('d/m/Y');
+            });
 
-        // TODO: Add any extra calculations in for showing a list of fixtures with player name next to it.
-
-        $next_date = new Carbon('this saturday');
-
-        $has_picks = $picks->where('game_date', $next_date);
-
-        $this_week_selection = false;
-        if(!$has_picks->count())
-        {
-            $this_week_selection = $next_date;
-        }
-
-        $picks_by_date = $picks->groupBy(function($pick) {
-            return $pick->game_date->format('d-m-Y');
-        });
+        // $fixtures_by_player_teams = $fixtures_by_player_teams->
 
         return view('content.picks.index')
-            ->with(compact('season', 'picks_by_date', 'this_week_selection'));
+            ->with(compact('season', 'fixtures_by_player_teams', 'this_week_selection'));
     }
 
     /**
