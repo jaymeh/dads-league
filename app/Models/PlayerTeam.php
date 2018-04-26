@@ -80,6 +80,8 @@ class PlayerTeam extends Model
 
 	public function getGameStatusAttribute()
 	{
+		// TODO: Tidy up this function by using helpers.
+
 		// dd('gothere');
 		if($this->fixture->game)
 		{
