@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\FixtureAvailable;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PickSaveRequest extends FormRequest
@@ -26,14 +27,18 @@ class PickSaveRequest extends FormRequest
     public function rules()
     {
         return [
-            'players.*' => 'required|integer'
+            'pick' => [
+                'required',
+                'integer',
+                new FixtureAvailable
+            ]
         ];
     }
 
     public function messages() {
         return [
-            'players.*.required' => 'You must pick a team for this player.',
-            'players.*.integer' => 'You must pick a team for this player.'
+            'pick.required' => 'You must pick a team.',
+            'pick.integer' => 'You must pick a valid team.'
         ];
     }
 }

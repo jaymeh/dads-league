@@ -3,11 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PickSaveRequest;
-use App\Models\Fixture;
-use App\Models\League;
-use App\Models\PickToken;
-use App\Models\Player;
-use App\Models\PlayerTeam;
+use App\Models\Team;
+use App\Models\{Fixture, League, PickToken, Player, PlayerTeam};
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -72,12 +69,14 @@ class PickController extends Controller
             'team_id' => $request->pick
         ]);
 
-        trigger_message('Successfully saved/updated this weeks picks.', 'success');
+        $team_name = Team::whereId($request->pick)->first()->name;
+
+        trigger_message("Successfully saved your pick of $team_name. Good Luck!", 'success');
 
         $token_player->expiry = now();
         $token_player->save();
 
-        return redirect()->route('index');
+        return redirect()->route('picks.index');
     }
 
     /**
@@ -115,7 +114,7 @@ class PickController extends Controller
             // Invalid token given.
             trigger_message('Could not find the token provided. Please contact Mark.', 'error');
 
-            return redirect()->route('index');
+            return redirect()->route('picks.index');
         }
 
         if(!$player_token->active)

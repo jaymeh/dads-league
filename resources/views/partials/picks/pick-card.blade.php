@@ -14,8 +14,10 @@
                 <team-picker 
                     :player-id="{{ $player->id }}"
                     team-id="{{ $active_pick ? $active_pick->team_id : '' }}"
-                    message-error="{{ ($errors->any()) ? $errors->first('players.' . $player->id) : "" }}"></team-picker>
+                    message-error="{{ ($errors->any()) ? $errors->first('pick') : "" }}"></team-picker>
             </div>
         @endif
+
+        {{-- {{ dd($errors->all()) }} --}}
     </div>
 </div>
