@@ -175,4 +175,30 @@ class PickController extends Controller
 
         // dd($player_token);
     }
+
+    public function list()
+    {
+        $season = current_season();
+        $season_id = $season->id;
+
+        $players = Player::with(['picks' => function($q) use($season_id) {
+                $q->where('season_id', $season_id);
+                $q->orderByDesc('game_date');
+            }])
+            ->get()
+            ->sortByDesc('name');
+
+        $total = $players->first()->picks->count();
+
+        $weeks = collect();
+        for($i = 1; $i <= $total; $i++)
+        {
+            $weeks->prepend($i);
+        }
+        // dd($weeks);
+        // $weeks = $weeks->reverse();
+
+        return view('content.picks.list')
+            ->with(compact('players', 'weeks'));
+    }
 }

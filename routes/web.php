@@ -21,8 +21,10 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('players', 'PlayerController')->except([
     'show'
 ]);
+
 Route::prefix('picks')->group(function () {
     Route::get('/', 'PickController@index')->name('picks.index');
 	Route::post('/', 'PickController@store')->name('picks.store');
-	Route::get('weekly/{token}', ['uses' => 'PickController@weeklyPick', 'as' => 'weekly-pick']);
+	Route::get('list', 'PickController@list')->name('picks.list');
+	Route::get('weekly/{token}', 'PickController@weeklyPick')->name('picks.weekly');
 });

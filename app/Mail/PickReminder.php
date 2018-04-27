@@ -33,7 +33,7 @@ class PickReminder extends Mailable
     public function build()
     {
         $url = route('index');
-        $token_link = route('weekly-pick', ['token' => $this->token]);
+        $token_link = route('picks.weekly', ['token' => $this->token]);
         $week_object = new Carbon('this saturday');
         return $this->markdown('emails.pick-reminder')
             ->with([

@@ -19240,6 +19240,10 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
   max-height: 34px;
 }
 
+.logo-small-width {
+  max-width: 34px;
+}
+
 .card .team-logo {
   height: 120px;
   margin: 20px;
@@ -19321,6 +19325,14 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
 
 .box .columns:last-child {
   margin-bottom: 0;
+}
+
+.margin-left {
+  margin-left: .75rem;
+}
+
+.margin-right {
+  margin-right: .75rem;
 }
 
 .fixture-table .team-logo {
