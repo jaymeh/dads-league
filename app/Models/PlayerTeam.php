@@ -80,44 +80,35 @@ class PlayerTeam extends Model
 
 	public function getGameStatusAttribute()
 	{
-		// TODO: Tidy up this function by using helpers.
-
-		// dd('gothere');
-		if($this->fixture->game)
+		if(!$this->fixture->game)
 		{
-			$game = $this->fixture->game;
+			return false;
+		}
 
-			if(!$game)
-			{
-				return false;
-			}
+		if(!$game = $this->fixture->game)
+		{
+			return false;
+		}
 
-			$status = '';
-			$home_score = $game->home_team_score;
-			$away_score = $game->away_team_score;
+		$status = '';
+		$home_score = $game->home_team_score;
+		$away_score = $game->away_team_score;
 
-			if($home_score == $away_score)
-			{
-				$status = 'Draw';
-			}
-			elseif($home_score < $away_score && $this->team_id == $game->home_team_id)
-			{
-				$status = 'Lose';
-			}
-			elseif($home_score > $away_score && $this->team_id == $game->home_team_id)
-			{
-				$status = 'Win';
-			}
-			elseif($home_score > $away_score && $this->team_id == $game->away_team_id)
-			{
-				$status = 'Lose';
-			}
-			elseif($home_score < $away_score && $this->team_id == $game->away_team_id)
-			{
-				$status = 'Win';
-			}
+		if($home_score == $away_score)
+		{
+			return 'Draw';
+		}
 
-			return $status;
+		$team_type = $game->home_team_id == $team_type ? 'Home' : 'Away';
+
+		if($team_type == 'Home') 
+		{
+			return $home_score > $away_score ? 'Win' : 'Lose';
+		}
+
+		if($team_type == 'Away')
+		{
+			return $away_score > $home_score ? 'Win' : 'Lose';
 		}
 
 		return false;
