@@ -33,8 +33,10 @@ class FixtureAvailable implements Rule
         // dd(request()->player_token);
         $token = request()->player_token;
         $game_date = new Carbon(request()->game_date);
+        // dd(request());
+        $fixture_id = request()->fixture;
 
-        return PlayerTeam::canPickTeam($value, $token, $game_date);
+        return PlayerTeam::canPickTeam($value, $token, $game_date, $fixture_id);
     }
 
     /**

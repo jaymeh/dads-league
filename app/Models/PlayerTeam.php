@@ -78,8 +78,9 @@ class PlayerTeam extends Model
 			->unique();
 	}
 
-	public function scopeCanPickTeam($query, $team_id, $player_token, $game_date)
+	public function scopeCanPickTeam($query, $team_id, $player_token, $game_date, $fixture_id)
 	{
+		// TODO: Refactor the validation and this function to work individually from one another.
 		$player_id = PickToken::where('token', $player_token)
 			->whereDate('expiry', '>=', now())
 			->first()
@@ -103,6 +104,11 @@ class PlayerTeam extends Model
 				$q->where('team_id', $team_id)
 					->whereDate('game_date', $game_date)
 					->where('player_id', '!=', $player_id);
+			})
+			->orWhere(function($q) use ($fixture_id, $game_date) {
+				// Check not picking rivaling team.
+				$q->where('fixture_id', $fixture_id)
+					->whereDate('game_date', $game_date);
 			})
 			->get();
 		
