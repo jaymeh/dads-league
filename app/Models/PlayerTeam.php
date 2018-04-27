@@ -105,10 +105,11 @@ class PlayerTeam extends Model
 					->whereDate('game_date', $game_date)
 					->where('player_id', '!=', $player_id);
 			})
-			->orWhere(function($q) use ($fixture_id, $game_date) {
+			->orWhere(function($q) use ($fixture_id, $game_date, $player_id) {
 				// Check not picking rivaling team.
 				$q->where('fixture_id', $fixture_id)
-					->whereDate('game_date', $game_date);
+					->whereDate('game_date', $game_date)
+					->where('player_id', '!=', $player_id);
 			})
 			->get();
 		

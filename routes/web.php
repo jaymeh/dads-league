@@ -21,14 +21,8 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('players', 'PlayerController')->except([
     'show'
 ]);
-
-// TODO: Clean this up since it's not a resource anymore.
-Route::resource('picks', 'PickController')->except([
-    'show',
-    'update',
-    'destroy',
-    'create',
-    'edit'
-]);
-
-Route::get('picks/weekly/{token}', ['uses' => 'PickController@weeklyPick', 'as' => 'weekly-pick']);
+Route::prefix('picks')->group(function () {
+    Route::get('/', 'PickController@index')->name('picks.index');
+	Route::post('/', 'PickController@store')->name('picks.store');
+	Route::get('weekly/{token}', ['uses' => 'PickController@weeklyPick', 'as' => 'weekly-pick']);
+});
