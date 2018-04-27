@@ -11,6 +11,9 @@
         </div>
     </section>
 
+	{{ 
+		// TODO: Fix layout of columns and widths.
+	}}
     <section class="section">
     	<div class="container">
     		<div class="columns is-multiline is-centered">
