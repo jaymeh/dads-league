@@ -90,7 +90,6 @@ class PlayerTeam extends Model
 			return false;
 		}
 
-		$status = '';
 		$home_score = $game->home_team_score;
 		$away_score = $game->away_team_score;
 
@@ -123,22 +122,6 @@ class PlayerTeam extends Model
 		];
 
 		$status = $this->gameStatus;
-
-		if(!isset($map[$status]))
-		{
-			return '';
-		}
-
-		return $map[$status];
-	}
-
-	private function getGameStatusClass($status)
-	{
-		$map = [
-			'Win' => 'is-success',
-			'Lose' => 'is-danger',
-			'Draw' => 'is-warning'
-		];
 
 		if(!isset($map[$status]))
 		{
