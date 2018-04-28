@@ -156,10 +156,12 @@ class GetScores extends Command
 
                     $insert_data['game_date'] = $match_day->format('Y-m-d');
 
-                    $fixture = $fixtures->where('game_date', $insert_data['game_date'])
+                    $carbon_game_date = new Carbon($insert_data['game_date']);
+
+                    $fixture = $fixtures->where('game_date', $carbon_game_date)
                         ->where('home_team_id', $insert_data['home_team_id'])
                         ->where('away_team_id', $insert_data['away_team_id'])
-                        ->first();         
+                        ->first();
 
                     $insert_data['fixture_id'] = null;
                     if($fixture)
@@ -170,7 +172,7 @@ class GetScores extends Command
                     Game::updateOrCreate([
                         'home_team_id' => $insert_data['home_team_id'], 
                         'away_team_id' => $insert_data['away_team_id'], 
-                        'game_date' => $insert_data['game_date']
+                        'game_date' => $carbon_game_date
                     ], $insert_data);
                 }
             }
