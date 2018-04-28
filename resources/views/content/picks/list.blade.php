@@ -11,15 +11,12 @@
         </div>
     </section>
 
-	{{ 
-		// TODO: Fix layout of columns and widths.
-	}}
     <section class="section">
     	<div class="container">
-    		<div class="columns is-multiline is-centered">
+    		<div class="columns is-multiline">
     			@foreach($players as $player)
-    				<div class="column">
-    					<table class="table is-striped">
+    				<div class="column is-half-tablet is-one-third-desktop">
+    					<table class="table is-striped is-fullwidth">
     						<thead>
     							<th>Week</th>
     							<th>&nbsp;</th>
