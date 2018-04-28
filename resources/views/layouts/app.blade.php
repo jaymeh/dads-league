@@ -44,9 +44,16 @@
                                 </div>
                                 
                             @endif
+                            
+                            <div class="navbar-item has-dropdown is-hoverable">
+                                <a class="navbar-item" href="#">Picks</a>
 
-                            <a class="navbar-item" href="{{ route('picks.index') }}">Picks</a>
-
+                                <div class="navbar-dropdown">
+                                     <a class="navbar-item" href="{{ route('picks.list') }}">List</a>
+                                        <a class="navbar-item" href="{{ route('picks.index') }}">Fixtures</a>
+                                </div>
+                            </div>
+                            
                         </div>
                         
                         <div class="navbar-end">
