@@ -128,7 +128,7 @@ class PlayerTeam extends Model
 			return 'Draw';
 		}
 
-		$team_type = $game->home_team_id == $team_type ? 'Home' : 'Away';
+		$team_type = $game->home_team_id == $this->team_id ? 'Home' : 'Away';
 
 		if($team_type == 'Home') 
 		{
