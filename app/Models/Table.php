@@ -6,5 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Table extends Model
 {
-    //
+    protected $fillable = [
+    	'player_id',
+    	'season_id',
+    	'score',
+    	'wins',
+    	'draws',
+    	'losses'
+    ];
 }
