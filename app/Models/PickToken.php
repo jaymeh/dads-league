@@ -20,6 +20,12 @@ class PickToken extends Model
         });
     }
 
+    public function scopeIsActiveByToken($query, $player_token)
+    {
+        return $query->where('token', $player_token)
+            ->whereDate('expiry', '>=', now());
+    }
+
     public function player()
     {
     	return $this->belongsTo(Player::class);

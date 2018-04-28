@@ -78,47 +78,34 @@ class PlayerTeam extends Model
 			->unique();
 	}
 
-	public function scopeCanPickTeam($query, $team_id, $player_token, $game_date, $fixture_id)
+	public function scopePlayerAlreadyPicked($query, $player_id, $team_id, $game_date)
 	{
-		// TODO: Refactor the validation and this function to work individually from one another.
-		$player_id = PickToken::where('token', $player_token)
-			->whereDate('expiry', '>=', now())
-			->first()
-			->player_id;
+		return $query->where(function($q) use ($player_id, $team_id, $game_date) {
+			// Check not picked in past by this player
+			$q->where('player_id', $player_id)
+				->where('team_id', $team_id)
+				->whereDate('game_date', '!=', $game_date);
+		});
+	}
 
-		// dd($player_id);
+	public function scopeTeamPickedByOtherPlayer($query, $team_id, $player_id, $game_date)
+	{
+		return $query->where(function($q) use ($team_id, $player_id, $game_date) {
+			// Check other person hasn't picked this week.
+			$q->where('team_id', $team_id)
+				->whereDate('game_date', $game_date)
+				->where('player_id', '!=', $player_id);
+		});
+	}
 
-		if(!$player_id)
-		{
-			return false;
-		}
-
-		$pick = $query->where(function($q) use ($player_id, $team_id, $game_date) {
-				// Check not picked in past by this player
-				$q->where('player_id', $player_id)
-					->where('team_id', $team_id)
-					->whereDate('game_date', '!=', $game_date);
-			})
-			->orWhere(function($q) use ($team_id, $player_id, $game_date) {
-				// Check other person hasn't picked this week.
-				$q->where('team_id', $team_id)
-					->whereDate('game_date', $game_date)
-					->where('player_id', '!=', $player_id);
-			})
-			->orWhere(function($q) use ($fixture_id, $game_date, $player_id) {
-				// Check not picking rivaling team.
-				$q->where('fixture_id', $fixture_id)
-					->whereDate('game_date', $game_date)
-					->where('player_id', '!=', $player_id);
-			})
-			->get();
-		
-		if($pick->count())
-		{
-			return false;
-		}
-
-		return true;
+	public function scopePickingRivalingTeam($query, $fixture_id, $game_date, $player_id)
+	{
+		return $query->orWhere(function($q) use ($fixture_id, $game_date, $player_id) {
+			// Check not picking rivaling team.
+			$q->where('fixture_id', $fixture_id)
+				->whereDate('game_date', $game_date)
+				->where('player_id', '!=', $player_id);
+		});
 	}
 
 	public function getGameStatusAttribute()
