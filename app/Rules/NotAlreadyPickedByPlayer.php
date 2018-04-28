@@ -2,6 +2,9 @@
 
 namespace App\Rules;
 
+use App\Models\PickToken;
+use App\Models\PlayerTeam;
+use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Rule;
 
 class NotAlreadyPickedByPlayer implements Rule
@@ -25,11 +28,44 @@ class NotAlreadyPickedByPlayer implements Rule
      */
     public function passes($attribute, $value)
     {
-        $player_id = PickToken::isActiveByToken($player_token)
-            ->first()
-            ->player_id;
+        // Get token
+        $token = request()->player_token;
 
-        
+        if(!$token)
+        {
+            return;
+        }
+
+        // Find player
+        $player = PickToken::isActiveByToken($token)
+            ->first();
+
+        if(!$player)
+        {
+            return;
+        }
+
+        // Get Game Date
+        if(!$game_date = request()->game_date)
+        {
+            return;
+        }
+
+        $game_date = new Carbon($game_date);
+
+        // Assign team so we know what it is
+        $team_id = $value;
+
+        $picked_by_another_count = PlayerTeam::teamPickedByOtherPlayer($team_id, $player->id, $game_date)
+            ->count();
+
+        // If team hasn't been picked by another player this week then success.
+        if(!$picked_by_another_count)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -39,6 +75,6 @@ class NotAlreadyPickedByPlayer implements Rule
      */
     public function message()
     {
-        return 'The validation error message.';
+        return 'This team has already been picked by another player this week.';
     }
 }

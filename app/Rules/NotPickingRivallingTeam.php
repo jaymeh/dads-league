@@ -7,7 +7,7 @@ use App\Models\PlayerTeam;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Rule;
 
-class PlayerAlreadyPicked implements Rule
+class NotPickingRivallingTeam implements Rule
 {
     /**
      * Create a new rule instance.
@@ -45,6 +45,14 @@ class PlayerAlreadyPicked implements Rule
             return;
         }
 
+        // TODO: We need the fixture to be updated to validate this correctly. If a team_id is just changed in the dom we do no other validation.
+
+        // Get Fixture
+        if(!$fixture_id = request()->fixture)
+        {
+            return;
+        }
+        
         // Get Game Date
         if(!$game_date = request()->game_date)
         {
@@ -53,14 +61,11 @@ class PlayerAlreadyPicked implements Rule
 
         $game_date = new Carbon($game_date);
 
-        // Assign team so we know what it is
-        $team_id = $value;
-
-        $player_picked = PlayerTeam::playerAlreadyPicked($player->id, $team_id, $game_date)
+        $rivalling_pick_count = PlayerTeam::pickingRivalingTeam($fixture_id, $game_date, $player->id)
             ->count();
 
-        // If we don't have an existing pick for the player then we are fine.
-        if(!$player_picked)
+        // If team hasn't been picked by another player this week then success.
+        if(!$rivalling_pick_count)
         {
             return true;
         }
@@ -75,6 +80,6 @@ class PlayerAlreadyPicked implements Rule
      */
     public function message()
     {
-        return 'You have already picked this team in the past. Please pick a different one.';
+        return 'Sorry, this team is playing against another which has been picked this week.';
     }
 }

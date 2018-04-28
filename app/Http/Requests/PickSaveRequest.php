@@ -2,13 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\FixtureAvailable;
+use App\Rules\{ FixtureAvailable, NotAlreadyPickedByPlayer, NotPickingRivallingTeam, PlayerAlreadyPicked, ValidPlayerToken };
 use Illuminate\Foundation\Http\FormRequest;
 
 class PickSaveRequest extends FormRequest
-{
-    // TODO: Add extra validation to make sure someone can't pick the same team twice.
-    
+{    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,10 +25,16 @@ class PickSaveRequest extends FormRequest
     public function rules()
     {
         return [
+            'player_token' => ['bail', 'required', new ValidPlayerToken],
+            'game_date' => 'bail|required|date',
+            'fixture' => 'bail|required',
             'pick' => [
                 'required',
                 'integer',
-                new FixtureAvailable
+                new PlayerAlreadyPicked,
+                new NotAlreadyPickedByPlayer,
+                new NotPickingRivallingTeam
+
             ]
         ];
     }

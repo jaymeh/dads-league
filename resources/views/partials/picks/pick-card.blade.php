@@ -13,7 +13,7 @@
             <div class="content">
                 <team-picker 
                     :player-id="{{ $player->id }}"
-                    team-id="{{ $active_pick ? $active_pick->team_id : '' }}"
+                    team-id="{{ old('pick', $active_pick ? $active_pick->team_id : '') }}"
                     message-error="{{ ($errors->any()) ? $errors->first('pick') : "" }}"></team-picker>
             </div>
         @endif
