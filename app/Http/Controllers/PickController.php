@@ -137,6 +137,11 @@ class PickController extends Controller
             });
         });
 
+        if($fixtures->count())
+        {
+            return view('content.picks.no-fixtures');
+        }
+
         $all_teams_by_league = $grouped_fixtures->map(function($league) use ($this_saturday, $excluded_ids) {
             return $league->fixtures->map(function($teams) use($excluded_ids, $league) {
                 $team_names = [$teams->homeTeam->id => [
