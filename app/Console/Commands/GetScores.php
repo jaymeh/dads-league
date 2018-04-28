@@ -24,6 +24,8 @@ class GetScores extends Command
      */
     protected $description = 'Runs off and grabs recent scores. This will probably change next season but I can deal with it then.';
 
+    // TODO: Add in an option to pass a date to start processing from. Useful for cron and testing.
+
     /**
      * Create a new command instance.
      *
