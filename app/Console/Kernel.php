@@ -24,6 +24,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        // TODO: Ensure all this is wrapped in season checks. No Season, bail out!
+
         // Get scores from last week.
         $schedule->command('cron:get-scores')
             ->sundays()->at('05:00');
