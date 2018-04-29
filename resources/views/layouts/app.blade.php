@@ -50,10 +50,13 @@
 
                                 <div class="navbar-dropdown">
                                      <a class="navbar-item" href="{{ route('picks.list') }}">List</a>
-                                        <a class="navbar-item" href="{{ route('picks.index') }}">Fixtures</a>
+                                    
+                                    <a class="navbar-item" href="{{ route('picks.index') }}">Fixtures</a>
                                 </div>
                             </div>
-                            
+
+                            <a class="navbar-item" href="{{ route('league-table') }}">Table</a>
+
                         </div>
                         
                         <div class="navbar-end">

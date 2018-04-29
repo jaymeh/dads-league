@@ -14,4 +14,9 @@ class Table extends Model
     	'draws',
     	'losses'
     ];
+
+    public function player()
+    {
+    	return $this->belongsTo(Player::class);
+    }
 }

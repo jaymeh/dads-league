@@ -28,3 +28,5 @@ Route::prefix('picks')->group(function () {
 	Route::get('list', 'PickController@list')->name('picks.list');
 	Route::get('weekly/{token}', 'PickController@weeklyPick')->name('picks.weekly');
 });
+
+Route::get('league-table', 'LeagueController@index')->name('league-table');
