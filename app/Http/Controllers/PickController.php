@@ -30,8 +30,6 @@ class PickController extends Controller
                 return $fixture->game_date->timestamp > now()->timestamp ? 'This Week' : $fixture->game_date->format('d/m/Y');
             });
 
-        // $fixtures_by_player_teams = $fixtures_by_player_teams->
-
         return view('content.picks.index')
             ->with(compact('season', 'fixtures_by_player_teams', 'this_week_selection'));
     }
