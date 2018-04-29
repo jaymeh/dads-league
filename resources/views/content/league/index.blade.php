@@ -18,7 +18,7 @@
 					<tr>
 						<td>Player Name</td>
 						<td class="has-text-centered">Points</td>
-						<td>W / D / L</td>
+						<td class="has-text-centered">W / D / L</td>
 					</tr>
 				</thead>
 				<tbody>
@@ -27,7 +27,7 @@
 						<tr>
 							<td><strong>{{ $player_name }}</strong></td>
 							<td class="has-text-centered"><strong>{{ $scores->score }}</strong></td>
-							<td>{{ $scores->wins }} / {{ $scores->draws }} / {{ $scores->losses }}</td>
+							<td class="has-text-centered">{{ $scores->wins }} / {{ $scores->draws }} / {{ $scores->losses }}</td>
 						</tr>
 
 					@endforeach
