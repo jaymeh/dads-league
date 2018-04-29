@@ -137,7 +137,7 @@ class PickController extends Controller
             });
         });
 
-        if($fixtures->count())
+        if(!$fixtures->count())
         {
             return view('content.picks.no-fixtures');
         }

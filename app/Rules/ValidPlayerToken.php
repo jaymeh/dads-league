@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use App\Models\PickToken;
 use Illuminate\Contracts\Validation\Rule;
 
 class ValidPlayerToken implements Rule
@@ -25,7 +26,7 @@ class ValidPlayerToken implements Rule
      */
     public function passes($attribute, $value)
     {
-        $player = PickToken::isActiveByToken($token)
+        $player = PickToken::isActiveByToken($value)
             ->first();
 
         if($player)
