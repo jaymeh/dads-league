@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Shelley Football League - Coming August 2018</title>
+	<title>Shelley Football League - Commencing August 2018</title>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css" />
 	<style>
 		.logo-small {
 			max-width: 60px;
 			display: inline-block;
+		}
+		.logos img:not(:last-child) {
 			margin-right: 1.5rem;
 		}
 		.logo-medium {
@@ -17,7 +19,11 @@
 		}
 
 		.modal {
-			background-color: grey;
+			background-color: #3e3e3e;
+		}
+
+		.landing-modal {
+			overflow:auto;
 		}
 
 		.modal-card {
@@ -31,12 +37,12 @@
 	<section class="section">
 		<div class="container">
 			<div class="modal is-active">
-				<div class="modal-card">
+				<div class="modal-card landing-modal">
 					<div class="logo has-text-centered">
 						<img class="logo-medium" src="img/football-logo.png" />
 					</div>
 					<div class="has-text-centered has-margin-bottom">
-						<h1 class="is-size-2">Coming August 2018!</h1>
+						<h1 class="is-size-2">Commencing August 2018!</h1>
 					</div>
 					<div class="logos has-text-centered">
 						<img class="logo-small" src="img/premierleague.png" />
