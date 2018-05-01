@@ -15,32 +15,34 @@
     	<div class="container">
     		<div class="columns is-multiline">
     			@foreach($players as $player)
-    				<div class="column is-half-tablet is-one-third-desktop">
-    					<table class="table is-striped is-fullwidth">
-    						<thead>
-    							<th>Week</th>
-    							<th>&nbsp;</th>
-    							<th>{{ $player->name }}</th>
-    							<th>Date</th>
-    						</thead>
-    						<tbody>
-    							@foreach($player->picks as $i => $team)
-	    							<tr>
-	    								<td class="has-text-centered">{{ $weeks[$i] }}</td>
-	    								<td class="has-text-centered">
-	    									<img class="logo-small" src="{{ $team->logo }}" alt="{{ $team->name }}" />
-	    								</td>
-	    								<td>
-	    									{{ $team->name }}
-	    								</td>
-	    								<td>
-	    									{{ $team->formattedPickGameDate }}
-	    								</td>
-	    							</tr>
-	    						@endforeach
-    						</tbody>
-    					</table>
-    				</div>
+                    @if($player->picks->count())
+                        <div class="column is-half-tablet is-one-third-desktop">
+                            <table class="table is-striped is-fullwidth">
+                                <thead>
+                                    <th>Week</th>
+                                    <th>&nbsp;</th>
+                                    <th>{{ $player->name }}</th>
+                                    <th>Date</th>
+                                </thead>
+                                <tbody>
+                                    @foreach($player->picks as $i => $team)
+                                        <tr>
+                                            <td class="has-text-centered">{{ $team->number }}</td>
+                                            <td class="has-text-centered">
+                                                <img class="logo-small" src="{{ $team->logo }}" alt="{{ $team->name }}" />
+                                            </td>
+                                            <td>
+                                                {{ $team->name }}
+                                            </td>
+                                            <td>
+                                                {{ $team->formattedPickGameDate }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
     			@endforeach
     		</div>
     	</div>

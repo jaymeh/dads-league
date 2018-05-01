@@ -191,15 +191,15 @@ class PickController extends Controller
             ->get()
             ->sortByDesc('name');
 
-        $total = $players->first()->picks->count();
+        $players->each(function($player) {
+            $count = $player->picks->count();
 
-        $weeks = collect();
-        for($i = 1; $i <= $total; $i++)
-        {
-            $weeks->prepend($i);
-        }
-        // dd($weeks);
-        // $weeks = $weeks->reverse();
+            $player->picks->each(function($pick) use(&$count) {
+                $pick->number = $count;
+
+                $count--;
+            });
+        });
 
         return view('content.picks.list')
             ->with(compact('players', 'weeks'));
