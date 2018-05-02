@@ -30,3 +30,26 @@ Route::prefix('picks')->group(function () {
 });
 
 Route::get('league-table', 'LeagueController@index')->name('league-table');
+
+Route::get('weekly-result-mail', function() {
+	$last_week = new Carbon\Carbon('last saturday');
+	$results = App\Models\PlayerTeam::whereHas('team')
+            ->with('player', 'team', 'fixture.game')
+            ->where('game_date', $last_week)
+            ->get();
+
+    $season = current_season();
+
+    $table = App\Models\Table::where('season_id', $season->id)
+        ->with('player')
+        ->orderByDesc('score')
+        ->get()
+        ->mapWithKeys(function($table) {
+            return [$table->player->name => $table];
+        });
+
+    // dd($table);
+
+    return new App\Mail\WeeklyResults($results, $table);
+});
+

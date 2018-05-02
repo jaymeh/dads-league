@@ -10,15 +10,18 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class WeeklyResults extends Mailable
 {
     use Queueable, SerializesModels;
+    public $results;
+    public $table;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($results, $table)
     {
-        //
+        $this->results = $results;
+        $this->table = $table;
     }
 
     /**
@@ -28,6 +31,6 @@ class WeeklyResults extends Mailable
      */
     public function build()
     {
-        return $this->view('view.name');
+        return $this->markdown('emails.weekly-results');
     }
 }
