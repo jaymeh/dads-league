@@ -38,15 +38,17 @@ class Kernel extends ConsoleKernel
         $schedule->command('cron:weekly-fixtures')
             ->sundays()->at('11:00');
 
-        // TODO: Email sunday lunchtime with scores. Clarify if this is just one week list or all time.
+        // Email sunday lunchtime with scores. Clarify if this is just one week list or all time.
+        $schedule->command('cron:weekly-results-email')
+            ->sundays()->at('11:59');
 
         // Send reminder to everyone to send in their picks.
         $schedule->command('cron:send-weekly-picks')
             ->sundays()->at('12:00');
 
-        // On Friday if someone hasn't picked send email prompting pick with Mark CC'd.
+        // TODO: On Friday if someone hasn't picked send email prompting pick with Mark CC'd.
         
-        // Prompt for new season input on 14th July each year.
+        // TODO: Prompt for new season input on 14th July each year.
     }
 
     /**
