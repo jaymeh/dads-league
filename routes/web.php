@@ -30,12 +30,3 @@ Route::prefix('picks')->group(function () {
 });
 
 Route::get('league-table', 'LeagueController@index')->name('league-table');
-
-Route::get('weekly-result-mail', function() {
-	
-
-    // dd($results);
-
-    
-});
-
