@@ -2,9 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\WeeklyResults;
+use App\Models\Player;
 use App\Models\PlayerTeam;
+use App\Models\Table;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 
 class WeeklyResultsEmail extends Command
 {
@@ -39,23 +43,28 @@ class WeeklyResultsEmail extends Command
      */
     public function handle()
     {
-        $last_weeks_date = new Carbon('last saturday');
-        // Last weeks picks.
-        $last_weeks_picks = PlayerTeam::with('player', 'fixture.homeTeam', 'fixture.awayTeam', 'team')
-            ->whereDate('game_date', $last_weeks_date)
-            ->get()
-            ->mapWithKeys(function($pick) {
-                // Team picked
-                $picked_team = '';
+        $last_week = new Carbon('last saturday');
+        $results = PlayerTeam::whereHas('team')
+                ->with('player', 'team', 'fixture.game')
+                ->where('game_date', $last_week)
+                ->get();
 
-                // Fixture Home Team
-                
-                // Fixture Away Team
+        $season = current_season();
+
+        $table = Table::where('season_id', $season->id)
+            ->with('player')
+            ->orderByDesc('score')
+            ->get()
+            ->mapWithKeys(function($table) {
+                return [$table->player->name => $table];
             });
 
-        dd($last_weeks_picks);
-        // Last weeks results.
-        // Send to all players.
-        // 
+        // Get all active players emails.
+        $players = Player::all()->pluck('email');
+
+        // $to = $players->implode(',');
+
+        Mail::to($players)
+            ->send(new WeeklyResults($results, $table));
     }
 }
