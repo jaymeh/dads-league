@@ -21,4 +21,9 @@ class Player extends Model
     {
         return $this->belongsToMany(Team::class);
     }
+
+    public function token()
+    {
+        return $this->hasOne(PickToken::class);
+    }
 }
