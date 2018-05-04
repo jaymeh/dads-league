@@ -129,7 +129,31 @@ class PickController extends Controller
 
         $excluded_ids = PlayerTeam::teamsToExclude($player->id, $this_saturday, $season);
 
-        $grouped_fixtures = League::withFixturesByDate($this_saturday, $excluded_ids);
+        $grouped_fixtures = League::withFixturesByDate($this_saturday, $excluded_ids)
+            ->map(function($league) use ($excluded_ids) {
+                $fixture_map = collect();
+
+                if($league->fixtures)
+                {
+                    $league->fixtures = $league->fixtures->map(function($fixture) use ($excluded_ids) {
+                        $fixture->homeTeam->disabled = false;
+                        if($excluded_ids->contains($fixture->homeTeam->id))
+                        {
+                            $fixture->homeTeam->disabled = true;
+                        }
+
+                        $fixture->awayTeam->disabled = false;
+                        if($excluded_ids->contains($fixture->awayTeam->id))
+                        {
+                            $fixture->awayTeam->disabled = true;
+                        }
+
+                        return $fixture;
+                    });
+                }
+
+                return $league;
+            });
 
         $fixtures = $grouped_fixtures->mapWithKeys(function($league) {
             return $league->fixtures->mapWithKeys(function($fixture) {
@@ -172,13 +196,8 @@ class PickController extends Controller
             ->whereDate('game_date', $this_saturday)
             ->where('player_id', $player->id)
             ->first();
-            // ->pluck('team_id');
-
-        // dd($active_pick);
 
         return view('content.picks.weekly')->with(compact('this_saturday', 'token', 'grouped_fixtures', 'player', 'all_teams', 'fixtures', 'active_pick'));
-
-        // dd($player_token);
     }
 
     public function list()

@@ -50,11 +50,15 @@
                             <tbody>
                                 @foreach($league->fixtures as $fixture)
                                     <tr class="{{ $fixture->disabled ? 'disabled' : '' }}">
-                                        <td class="text-center is-hidden-mobile team-logo"><img class="logo-small" src="{{ $fixture->homeTeam->logo }}" alt="{{ $fixture->homeTeam->name }} logo" /></td>
-                                        <td class="text-center team-name">{{ $fixture->homeTeam->name }}</td>
+                                        <td class="text-center is-hidden-mobile team-logo {{ $fixture->homeTeam->disabled ? 'disabled' : '' }}">
+                                            <img class="logo-small" src="{{ $fixture->homeTeam->logo }}" alt="{{ $fixture->homeTeam->name }} logo" />
+                                        </td>
+                                        <td class="text-center team-name {{ $fixture->homeTeam->disabled ? 'disabled' : '' }}">{{ $fixture->homeTeam->name }}</td>
                                         <td class="text-center">v</td>
-                                        <td class="text-center team-name">{{ $fixture->awayTeam->name }}</td>
-                                        <td class="text-center is-hidden-mobile team-logo"><img class="logo-small" src="{{ $fixture->awayTeam->logo }}" alt="{{ $fixture->homeTeam->name }} logo" /></td>
+                                        <td class="text-center team-name {{ $fixture->awayTeam->disabled ? 'disabled' : '' }}">{{ $fixture->awayTeam->name }}</td>
+                                        <td class="text-center is-hidden-mobile team-logo {{ $fixture->awayTeam->disabled ? 'disabled' : '' }}">
+                                            <img class="logo-small" src="{{ $fixture->awayTeam->logo }}" alt="{{ $fixture->homeTeam->name }} logo" />
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
