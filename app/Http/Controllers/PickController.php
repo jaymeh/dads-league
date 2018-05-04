@@ -21,6 +21,8 @@ class PickController extends Controller
      */
     public function index(Request $request)
     {
+        $first_week = new Carbon('2017-08-12');
+        // dd(week_number($first_week));
         // Get fixtures for this week wherehas and with player teams
         $fixtures_by_player_teams = Fixture::whereHas('playerTeam')
             ->with('playerTeam.player', 'game')

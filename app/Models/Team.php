@@ -23,6 +23,17 @@ class Team extends Model
         }
     }
 
+    public function getCarbonGameDateAttribute()
+    {
+        if($this->pivot)
+        {
+            $date = new Carbon($this->pivot->game_date);
+            return $date;
+        }
+
+        return false;
+    }
+
     public function league()
     {
     	return $this->belongsTo(League::class);

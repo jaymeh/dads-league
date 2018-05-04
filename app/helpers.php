@@ -46,10 +46,52 @@ if(!function_exists('current_season')) {
 	function current_season() 
 	{
 		$date = Carbon\Carbon::now();
-		$current_season = App\Models\Season::whereDate('start_date', '<=', $date)
+
+		$season = App\Models\Season::whereDate('start_date', '<=', $date)
 			->whereDate('end_date', '>=', $date)
 			->first();
 
-		return $current_season;
+		if(!$season)
+		{
+			$season = App\Models\Season::where(function($q) use($date) {
+					$q->whereDate('start_date', '<=', $date);
+					$q->whereDate('end_date', '>=', $date);
+				})
+				->orWhere(function($q) use ($date) {
+					$q->whereDate('end_date', '<', $date);
+					$q->orderByDesc('end_date');
+				})
+				->first();
+		}
+
+		return $season;
+	}
+}
+
+if(!function_exists('current_week')) {
+	function week_number($date = null)
+	{
+		if(!$date)
+		{
+			$date = Carbon\Carbon::now();
+		}
+
+		$one_week = now()->addWeek();
+
+		$season = Cache::remember('week_season_' . $date->format('Y-m-d'), $one_week, function () use ($date) {
+		    return App\Models\Season::where(function($q) use($date) {
+					$q->whereDate('start_date', '<=', $date);
+					$q->whereDate('end_date', '>=', $date);
+				})
+				->orWhere(function($q) use ($date) {
+					$q->whereDate('end_date', '<', $date);
+					$q->orderByDesc('end_date');
+				})
+				->first();
+		});
+
+		$week_number = $date->diffInWeeks($season->start_date);
+
+		return $week_number + 1;
 	}
 }

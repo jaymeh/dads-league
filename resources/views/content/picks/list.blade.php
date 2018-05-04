@@ -27,7 +27,7 @@
                                 <tbody>
                                     @foreach($player->picks as $i => $team)
                                         <tr>
-                                            <td class="has-text-centered">{{ $team->number }}</td>
+                                            <td class="has-text-centered">{{ week_number($team->carbon_game_date) }}</td>
                                             <td class="has-text-centered">
                                                 <img class="logo-small" src="{{ $team->logo }}" alt="{{ $team->name }}" />
                                             </td>
