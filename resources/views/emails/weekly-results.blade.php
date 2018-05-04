@@ -1,6 +1,6 @@
 @component('mail::message')
 <div style="text-align: center;">
-	<img style="max-width: 200px; " src="{{ url('/assets/img/branding/logo/logo.png') }}" alt="Logo for Shelley Football League" />
+	<img style="max-width: 100px; " src="{{ url('/assets/img/branding/logo/logo.png') }}" alt="Logo for Shelley Football League" />
 </div>
 <h1 style="margin-top: 35px;">Results for <strong>{{ $results->first()->game_date->format('l dS F Y') }}</strong></h1>
 <h2>League Table</h2>
@@ -21,4 +21,6 @@
 	@endforeach
 @endcomponent
 
+Thanks,<br>
+{{ config('app.name') }}
 @endcomponent

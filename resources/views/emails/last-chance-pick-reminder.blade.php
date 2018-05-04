@@ -1,5 +1,8 @@
 @component('mail::message')
-# Last chance to pick for Week {{ $week }}
+<div style="text-align: center;">
+	<img style="max-width: 100px; " src="{{ url('/assets/img/branding/logo/logo.png') }}" alt="Logo for Shelley Football League" />
+</div>
+<h1 style="margin-top: 35px;">Last chance to pick for Week {{ $week }}</h1>
 @component('mail::promotion')
 Last chance to pick your team for this week by clicking the link below and selecting from the available options.
 @component('mail::button', ['url' => $token_link])

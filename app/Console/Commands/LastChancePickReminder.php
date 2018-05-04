@@ -55,8 +55,6 @@ class LastChancePickReminder extends Command
             Mail::to($player->email)
                 ->cc('mark@shelleyfootball.club')
                 ->send(new LastChanceEmail($player->token->token));
-
-            var_dump($player->id);
         }
     }
 }
