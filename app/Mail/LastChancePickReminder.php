@@ -31,13 +31,15 @@ class LastChancePickReminder extends Mailable
      */
     public function build()
     {
-        $week = new Carbon('this saturday');
-        $week = $week->format('d/m/Y');
+        $week = week_number();
 
         $token_link = route('picks.weekly', ['token' => $this->token]);
 
+        $date = new Carbon('this saturday');
+
         return $this->markdown('emails.last-chance-pick-reminder')
-            ->subject('Last chance to pick your team for ' . $week)
-            ->with(compact('week', 'token_link'));
+            ->subject('Last chance to pick your team for Week ' . $week)
+            ->with(compact('week', 'token_link'))
+            ->with(['date' => $date->format('l dS F Y')]);
     }
 }

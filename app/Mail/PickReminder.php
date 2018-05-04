@@ -34,12 +34,16 @@ class PickReminder extends Mailable
     {
         $url = route('index');
         $token_link = route('picks.weekly', ['token' => $this->token]);
-        $week_object = new Carbon('this saturday');
+        $date = new Carbon('this saturday');
+        $week = week_number();
+
         return $this->markdown('emails.pick-reminder')
+            ->subject('Pick your teams for Week ' . $week)
             ->with([
                 'url' => $url,
                 'token_link' => $token_link,
-                'week' => $week_object->format('d/m/Y')
+                'week' => $week,
+                'date' => $date->format('l dS F Y')
             ]);
     }
 }
