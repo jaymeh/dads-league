@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // TODO: Ensure all this is wrapped in season checks. No Season, bail out!
+        // Ensure all this is wrapped in season checks. No Season, bail out!
         $current_season = current_season();
 
         if($current_season)
