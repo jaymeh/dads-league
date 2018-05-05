@@ -42,6 +42,15 @@ class SendPickReminderCommand extends Command
      */
     public function handle()
     {
+        // Find current season
+        $season = current_season(true);
+
+        if(!$season)
+        {
+            $this->info('No season is currently active.');
+            return;
+        }
+        
         // Clean out last weeks token.
         PickToken::query()->truncate();
 

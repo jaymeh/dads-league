@@ -41,6 +41,14 @@ class LastChancePickReminder extends Command
      */
     public function handle()
     {
+        $season = current_season(true);
+
+        if(!$season)
+        {
+            $this->info('No season is currently active.');
+            return;
+        }
+
         // Find everyone who doesn't have a pick for this week.
         $players_not_picked = Player::whereDoesntHave('picks', function($q) {
                 $q->where('game_date', new Carbon('this saturday'));

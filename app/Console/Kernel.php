@@ -48,11 +48,11 @@ class Kernel extends ConsoleKernel
             ->sundays()->at('12:00');
 
         // On Friday if someone hasn't picked send email prompting pick with Mark CC'd.
-        $schedule->command('cron:send-weekly-picks')
+        $schedule->command('cron:last-chance-pick-reminder')
             ->fridays()->at('16:00');
         
         // Prompt for new season input on 14th July each year.
-        $schedule->command('cron:send-weekly-picks')
+        $schedule->command('cron:prompt-new-season')
                 ->cron('0 9 14 7 *');
     }
 

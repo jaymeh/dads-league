@@ -44,7 +44,7 @@ class TallyScores extends Command
 
         if(!$season)
         {
-            $this->info('We are out of season! Nothing to process.');
+            $this->info('No season is currently active.');
             return;
         }
 

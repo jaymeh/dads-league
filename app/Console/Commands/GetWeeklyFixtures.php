@@ -42,6 +42,15 @@ class GetWeeklyFixtures extends Command
      */
     public function handle()
     {
+        // Find current season
+        $season = current_season(true);
+
+        if(!$season)
+        {
+            $this->info('No season is currently active.');
+            return;
+        }
+        
         $client = new Client();
 
         $fixture_date = new Carbon('this saturday');

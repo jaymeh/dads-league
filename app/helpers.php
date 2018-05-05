@@ -43,7 +43,7 @@ if(!function_exists('trigger_message'))
 }
 
 if(!function_exists('current_season')) {
-	function current_season() 
+	function current_season($hard_check = false) 
 	{
 		$date = Carbon\Carbon::now();
 
@@ -51,7 +51,7 @@ if(!function_exists('current_season')) {
 			->whereDate('end_date', '>=', $date)
 			->first();
 
-		if(!$season)
+		if(!$season && !$hard_check)
 		{
 			$season = App\Models\Season::where(function($q) use($date) {
 					$q->whereDate('start_date', '<=', $date);

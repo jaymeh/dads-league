@@ -43,19 +43,18 @@ class GetScores extends Command
      */
     public function handle()
     {
-        $client = new Client();
-        $content = [];
+        $season = current_season(true);
 
-        $season = current_season();
         if(!$season)
         {
-            $this->error('No season is currently active.');
+            $this->info('No season is currently active.');
             return;
         }
 
-        $match_day = $season->start_date;
+        $client = new Client();
+        $content = [];
 
-        $match_day = new Carbon('2018-04-21');
+        $match_day = $season->start_date;
 
         $today = Carbon::now();
         $today->setTime(0, 0, 0);

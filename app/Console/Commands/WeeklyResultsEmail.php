@@ -43,6 +43,15 @@ class WeeklyResultsEmail extends Command
      */
     public function handle()
     {
+        // Find current season
+        $season = current_season();
+
+        if(!$season)
+        {
+            $this->info('No season is currently active.');
+            return;
+        }
+
         $last_week = new Carbon('last saturday');
         $results = PlayerTeam::whereHas('team')
                 ->with('player', 'team', 'fixture.game')
