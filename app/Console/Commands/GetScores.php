@@ -90,8 +90,6 @@ class GetScores extends Command
 
             $table_data = $crawler->filter('.football-matches__container')->filter('table');
 
-            // dd($table_data);
-
             $game_data = $table_data->each(function($node) use ($teams, $match_day)
             {
                 $temp_node = clone($node);
