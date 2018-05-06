@@ -11,7 +11,8 @@ class Team extends Model
     protected $fillable = [
     	'name',
     	'logo',
-    	'league_id'
+    	'league_id',
+        'season_id'
     ];
 
     public function getFormattedPickGameDateAttribute()
