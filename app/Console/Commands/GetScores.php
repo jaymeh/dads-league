@@ -90,7 +90,9 @@ class GetScores extends Command
 
             $table_data = $crawler->filter('.football-matches__container')->filter('table');
 
-            $game_data = $table_data->each(function($node) use ($teams)
+            // dd($table_data);
+
+            $game_data = $table_data->each(function($node) use ($teams, $match_day)
             {
                 $temp_node = clone($node);
                 $league = trim(preg_replace('/\s\s+/', ' ', $temp_node->filter('caption')->text()));
@@ -100,7 +102,7 @@ class GetScores extends Command
                 $new_league = array();
 
                 $new_league['league'] = $league_data[0];
-                $new_league['date'] = $league_data[1];
+                $new_league['date'] = $league_data[1] . $match_day->year;
 
                 $data = $node->filter('.football-match--result')->each(function($sub_node) { return trim($sub_node->text()); });
 
@@ -123,7 +125,7 @@ class GetScores extends Command
                     $home_team_score = intval($people_data[2]);
                     $away_team_id = $away_team->id;
                     $away_team_score = intval($people_data[4]);
-                    $game_date = 
+                    $game_date = $new_league['date'] . ' ' . $match_day->year;
 
                     $results[] = compact('home_team_id', 'home_team_score', 'away_team_id', 'away_team_score', 'game_date');
                 }
@@ -134,6 +136,7 @@ class GetScores extends Command
             foreach($game_data as $games)
             {
                 $league = $games['data']['league'];
+
                 $league = $leagues->where('name', $league)->first();
 
                 if(!$league)

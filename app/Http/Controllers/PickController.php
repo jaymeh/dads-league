@@ -202,8 +202,10 @@ class PickController extends Controller
 
     public function list()
     {
-        $season = current_season();
+        $season = current_season(true);
         $season_id = $season->id;
+
+        // TODO: Add bail here for when no seasons found.
 
         $players = Player::with(['picks' => function($q) use($season_id) {
                 $q->where('season_id', $season_id);
@@ -211,16 +213,6 @@ class PickController extends Controller
             }])
             ->get()
             ->sortByDesc('name');
-
-        $players->each(function($player) {
-            $count = $player->picks->count();
-
-            $player->picks->each(function($pick) use(&$count) {
-                $pick->number = $count;
-
-                $count--;
-            });
-        });
 
         return view('content.picks.list')
             ->with(compact('players', 'weeks'));
