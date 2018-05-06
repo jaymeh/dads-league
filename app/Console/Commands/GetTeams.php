@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Season;
 use App\Models\{ League, Team };
 use Goutte\Client;
 use Illuminate\Console\Command;
@@ -13,7 +14,7 @@ class GetTeams extends Command
      *
      * @var string
      */
-    protected $signature = 'cron:get-teams';
+    protected $signature = 'cron:get-teams {seasonId=false}';
 
     /**
      * The console command description.
@@ -40,6 +41,21 @@ class GetTeams extends Command
     public function handle()
     {
         $leagues = League::get()->pluck('slug', 'id');
+
+        $season_id = $this->argument('seasonId');
+
+        $season = Season::whereId($season_id)->first();
+
+        if(!$season)
+        {
+            $season = current_season();
+
+            if(!$season)
+            {
+                $this->error('No Active Season');
+                return;
+            }
+        }
 
         $clean_teams = [];
         foreach($leagues as $league_id => $league)
@@ -70,14 +86,18 @@ class GetTeams extends Command
                 $clean_teams[] = [
                     'name' => $team_name,
                     'logo' => isset($logos[$key]) ? $logos[$key] : null,
-                    'league_id' => $league_id
+                    'league_id' => $league_id,
+                    'season_id' => $season->id
                 ];
             }
         }
 
         foreach($clean_teams as $team)
         {
-            Team::updateOrCreate(['name' => $team['name']], $team);
+            Team::updateOrCreate([
+                'name'      => $team['name'], 
+                'season_id' => $season->id
+            ], $team);
         }
     }
 }
