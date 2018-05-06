@@ -54,6 +54,9 @@ class Kernel extends ConsoleKernel
         // Prompt for new season input on 14th July each year.
         $schedule->command('cron:prompt-new-season')
                 ->cron('0 9 14 7 *');
+
+        // TODO: Get new teams every season. 
+        // Once we have the season filled out.
     }
 
     /**
