@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 
 class Player extends TestCase
@@ -66,17 +67,96 @@ class Player extends TestCase
 		$response = $this
 			->actingAs($user)
 			->post(route('players.store'), [
-				$name,
-				$email
+				'name' => $name,
+				'email' => $email
 			]);
-
-		dd($response->assertRedirect('/players'));
-
-		// $response->assertRedirect('/login');
 
 		$this->assertDatabaseHas('players', [
 			'name' => $name,
 			'email' => $email
+		]);
+	}
+
+	/** @test */
+	public function an_unauthenticated_user_cannot_delete_players()
+	{
+		$player = factory(\App\Models\Player::class)->create();
+
+		$response = $this
+			->delete(route('players.destroy', $player));
+
+		$response->assertRedirect('/login');
+
+		$this->assertDatabaseHas('players', [
+			'name' => $player->name,
+			'email' => $player->email
+		]);
+	}
+
+	/** @test */
+	public function an_authenticated_user_can_delete_players()
+	{
+		$player = factory(\App\Models\Player::class)->create();
+		$user = factory(\App\Models\User::class)->create();
+
+		$response = $this
+			->actingAs($user)
+			->delete(route('players.destroy', $player));
+
+		$response->assertRedirect(route('players.index'));
+
+		$this->assertDatabaseMissing('players', [
+			'name' => $player->name,
+			'email' => $player->email
+		]);
+	}
+
+	/** @test */
+	public function an_unauthenticated_user_cannot_edit_players()
+	{
+		$player = factory(\App\Models\Player::class)->create();
+
+		$new_player = $player;
+		$new_player->name = $this->faker->name;
+		$new_player->email = $this->faker->safeEmail;
+
+		$response = $this
+			->put(route('players.update', $new_player));
+
+		$response->assertRedirect('/login');
+
+		$this->assertDatabaseMissing('players', [
+			'name' => $new_player->name,
+			'email' => $new_player->email
+		]);
+	}
+
+	/** @test */
+	public function an_authenticated_user_can_edit_players()
+	{
+		$player = factory(\App\Models\Player::class)->create();
+		$user = factory(\App\Models\User::class)->create();
+
+		$new_player_name = $this->faker->name;
+		$new_player_email = $this->faker->safeEmail;
+
+		$response = $this
+			->actingAs($user)
+			->patch(route('players.update', $player->id), [
+				'name' => $new_player_name,
+				'email' => $new_player_email
+			]);
+
+		$response->assertRedirect(route('players.index'));
+
+		$this->assertDatabaseHas('players', [
+			'name' => $new_player_name,
+			'email' => $new_player_email
+		]);
+
+		$this->assertDatabaseMissing('players', [
+			'name' => $player->name,
+			'email' => $player->email
 		]);
 	}
 }
