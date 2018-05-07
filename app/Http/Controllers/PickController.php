@@ -208,7 +208,7 @@ class PickController extends Controller
         // TODO: Add bail here for when no seasons found.
 
         $players = Player::with(['picks' => function($q) use($season_id) {
-                $q->where('season_id', $season_id);
+                $q->where('player_teams.season_id', $season_id);
                 $q->orderByDesc('game_date');
             }])
             ->get()
