@@ -7,7 +7,6 @@ $factory->define(App\Models\Game::class, function (Faker $faker) {
 
 	$excluded_fixtures = App\Models\Game::select('fixture_id')
 		->get()
-		->pluck('fixture_id')
 		->reject(function($fixture_id) {
 			if(!$fixture_id)
 			{
@@ -15,10 +14,10 @@ $factory->define(App\Models\Game::class, function (Faker $faker) {
 			}
 
 			return false;
-		});
+		})
+		->pluck('fixture_id');
 
 	$fixture = App\Models\Fixture::where('league_id', $league)
-		->whereDate('game_date', '<=', now())
 		->whereNotIn('id', $excluded_fixtures)
 		->inRandomOrder()
 		->get()
@@ -34,8 +33,8 @@ $factory->define(App\Models\Game::class, function (Faker $faker) {
       	'fixture_id' => $fixture->id,
       	'home_team_id' => $fixture->home_team_id,
       	'away_team_id' => $fixture->away_team_id,
-      	'home_team_score' => $faker->numberBetween(1, 6),
-      	'away_team_score' => $faker->numberBetween(1, 6),
+      	'home_team_score' => $faker->numberBetween(1, 4),
+      	'away_team_score' => $faker->numberBetween(1, 4),
       	'game_date' => $fixture->game_date
     ];
 });
