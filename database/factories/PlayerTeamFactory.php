@@ -42,6 +42,11 @@ $factory->define(App\Models\PlayerTeam::class, function (Faker $faker) {
 		->random(1)
 		->first();
 
+	if(!$fixture_with_team)
+	{
+		throw new Exception('No fixture found.');
+	}
+
     return [
         'game_date' => $game_date,
         'season_id' => $season->id,
