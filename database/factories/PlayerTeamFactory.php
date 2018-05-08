@@ -9,9 +9,7 @@ $factory->define(App\Models\PlayerTeam::class, function (Faker $faker) {
 	$player_query = App\Models\PlayerTeam::whereDate('game_date', $game_date)
 		->get();
 
-
 	$excluded_player_ids = $player_query->pluck('player_id');
-
 	$excluded_fixture_ids = $player_query->pluck('fixture_id');
 
 	// Get a random player, that hasn't picked yet.
@@ -23,7 +21,6 @@ $factory->define(App\Models\PlayerTeam::class, function (Faker $faker) {
 	$excluded_team_ids = $player_query->where('player_id', $player->id)
 		->pluck('team_id');
 
-	// TODO: Not same fixture as someone else.
 	$fixture_with_team = App\Models\Fixture::select('id', 'home_team_id', 'away_team_id')
 		->where(function($q) use ($excluded_team_ids, $game_date, $excluded_fixture_ids) {
 			$q->whereNotIn('home_team_id', $excluded_team_ids);
@@ -44,8 +41,6 @@ $factory->define(App\Models\PlayerTeam::class, function (Faker $faker) {
 		})
 		->random(1)
 		->first();
-
-	dd($fixture_with_team);
 
     return [
         'game_date' => $game_date,
