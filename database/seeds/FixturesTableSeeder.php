@@ -11,8 +11,9 @@ class FixturesTableSeeder extends Seeder
      */
     public function run()
     {
-    	// Here sould probably be where I do validation.
-
-        factory(App\Models\Fixture::class)->create();
+        for($i = 0; $i < 10; $i++)
+        {
+            factory(App\Models\Fixture::class)->create();
+        }
     }
 }

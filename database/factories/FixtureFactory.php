@@ -5,9 +5,9 @@ use Faker\Generator as Faker;
 $factory->define(App\Models\Fixture::class, function (Faker $faker, $attributes) {
 	$league = $faker->numberBetween(1, 4);
 
-	if(isset($attribute['game_date']))
+	if(isset($attributes['game_date']))
 	{
-		$date = new Carbon\Carbon($attribute['game_date']);
+		$date = new Carbon\Carbon($attributes['game_date']);
 	}
 	else
 	{
@@ -15,19 +15,19 @@ $factory->define(App\Models\Fixture::class, function (Faker $faker, $attributes)
 	}
 
 	$excluded_team_ids = App\Models\Fixture::select('home_team_id', 'away_team_id')
-		->where('game_date', $date)
+		->whereDate('game_date', $date)
 		->get()
 		->map(function($fixture) {
 			return [$fixture->home_team_id, $fixture->away_team_id];
 		})
 		->flatten()
-		->sort()
-		->toArray();
+		->unique()
+		->sort();
 
 	$teams = App\Models\Team::where('league_id', $league)
 		->whereNotIn('id', $excluded_team_ids)
-		->inRandomOrder()
 		->get()
+		->shuffle()
 		->pluck('id');
 
 	if(!isset($teams[0]) || !isset($teams[1]))
