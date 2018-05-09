@@ -27,24 +27,7 @@ class SeasonSeeder extends Seeder
     			'game_date' => $now
     		]);
 
-    		// $fixtures->each(function($fixture) {
-    		// 	factory(App\Models\Game::class, 1)->create([
-    		// 		'game_date' => $fixture->game_date,
-    		// 		'fixture_id' => $fixture->id,
-    		// 		'home_team_id' => $fixture->home_team_id,
-    		// 		'away_team_id' => $fixture->away_team_id,
-    		// 		'league_id' => $fixture->league_id
-     	// 		]);
-    		// });
-
-    		// dd($fixtures);
-    		// 
-    		dd('end');
-
     		$now = $now->modify('+1 week');
     	}
-
-        // Seed in Fixtures.
-        // 
     }
 }
