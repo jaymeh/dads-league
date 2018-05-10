@@ -11,6 +11,14 @@ class SeasonSeeder extends Seeder
      */
     public function run()
     {
+        // Truncate tables
+        App\Models\Season::query()->truncate();
+        App\Models\Player::query()->truncate();
+        App\Models\Fixture::query()->truncate();
+        App\Models\Game::query()->truncate();
+        App\Models\PlayerTeam::query()->truncate();
+        App\Models\Table::query()->truncate();
+
     	// Add fixtures 20 weeks from now.
     	$future_date = new Carbon\Carbon('this saturday');
     	$future_date = $future_date->modify('+20 weeks');
@@ -18,7 +26,7 @@ class SeasonSeeder extends Seeder
     	$now = new Carbon\Carbon('this saturday');
 
     	// Seed a season
-    	$season = factory(App\Models\Season::class, 1);
+    	$season = factory(App\Models\Season::class)->create();
 
         // Seed players
         $player_names = [
@@ -32,12 +40,16 @@ class SeasonSeeder extends Seeder
             'Pat'
         ];
 
+        $players = collect();
+
         foreach($player_names as $player_name)
         {
-            factory(App\Models\Player::class)->create([
+            $player = factory(App\Models\Player::class)->create([
                 'name' => $player_name,
                 'email' => strtolower($player_name) . '@example.org'
             ]);
+
+            $players->push($player);
         }
 
     	while($now != $future_date)
@@ -62,12 +74,41 @@ class SeasonSeeder extends Seeder
                 ]);
             }
 
-            // Add new pick for every player. 
-            // Screw validation at this stage and see what happens.
+            // Add new pick for every player.
+            $players->each(function($player) use (&$week_fixtures, $season, $now) {
+                $fixture = $week_fixtures->random();
+                $fixture_key = $week_fixtures->keys()->random();
+                $fixture = $week_fixtures[$fixture_key];
+
+                $teams = collect([ $fixture->home_team_id, $fixture->away_team_id ]);
+
+                $week_fixtures->forget($fixture_key);
+
+                factory(App\Models\PlayerTeam::class)->create([
+                    'player_id'     => $player->id,
+                    'season_id'     => $season->id,
+                    'team_id'       => $teams->random(),
+                    'fixture_id'    => $fixture->id,
+                    'game_date'     => $now
+                ]);
+            });
             
     		$now = $now->modify('+1 week');
     	}
 
+        // Add fixtures for a week after.
+        $now = $now->modify('+1 week');
+
+        for($i = 0; $i < 10; $i++)
+        {
+            factory(App\Models\Fixture::class)->create([
+                'game_date' => $now
+            ]);
+        }
+
         // Run the command to build the table.
+        Artisan::call('cron:tally-scores', [
+            'season_id' => $season->id
+        ]);
     }
 }

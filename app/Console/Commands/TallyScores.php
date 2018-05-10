@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\PlayerTeam;
+use App\Models\Season;
 use App\Models\Table;
 use Illuminate\Console\Command;
 
@@ -13,7 +14,7 @@ class TallyScores extends Command
      *
      * @var string
      */
-    protected $signature = 'cron:tally-scores';
+    protected $signature = 'cron:tally-scores {season_id?}';
 
     /**
      * The console command description.
@@ -39,8 +40,17 @@ class TallyScores extends Command
      */
     public function handle()
     {
-        // Find current season
-        $season = current_season();
+        $season_id = $this->argument('season_id');
+
+        if(!$season_id)
+        {
+            // Find current season
+            $season = current_season();
+        }
+        else
+        {
+            $season = Season::whereId($season_id)->first();
+        }
 
         if(!$season)
         {
@@ -54,7 +64,6 @@ class TallyScores extends Command
             ->get()
             ->groupBy('player_id')
             ->map(function($player) {
-                $player_id = '';
                 $point_map = $player->map(function($pick) {
                     $game_status = $pick->gameStatus;
                     $pick->status = $game_status;

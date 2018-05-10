@@ -2,9 +2,17 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(App\Models\PlayerTeam::class, function (Faker $faker) {
+$factory->define(App\Models\PlayerTeam::class, function (Faker $faker, $attributes) {
 	$season = current_season();
-	$game_date = new Carbon\Carbon('this saturday');
+
+	if(!isset($attributes['game_date']))
+	{
+		$game_date = new Carbon\Carbon('this saturday');
+	}
+	else
+	{
+		$game_date = new Carbon\Carbon($attributes['game_date']);
+	}
 
 	$player_query = App\Models\PlayerTeam::whereDate('game_date', $game_date)
 		->get();
@@ -17,6 +25,11 @@ $factory->define(App\Models\PlayerTeam::class, function (Faker $faker) {
 		->whereNotIn('id', $excluded_player_ids)
 		->get()
 		->first();
+
+	if(!$player)
+	{
+		throw new Exception('No player found.');
+	}
 
 	$excluded_team_ids = $player_query->where('player_id', $player->id)
 		->pluck('team_id');
@@ -50,8 +63,8 @@ $factory->define(App\Models\PlayerTeam::class, function (Faker $faker) {
     return [
         'game_date' => $game_date,
         'season_id' => $season->id,
-        'fixture_id' => $fixture_with_team->id,
-        'team_id' => $fixture_with_team->team_id,
+        'fixture_id' => $fixture_with_team['id'],
+        'team_id' => $fixture_with_team['team_id'],
         'player_id' => $player->id,
     ];
 });
