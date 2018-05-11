@@ -112,8 +112,6 @@ if(!function_exists('next_game_date'))
 			$team_picks = $team_picks
 	            ->groupBy('game_date')
 	            ->get();
-
-
 		}
 		else
 		{
@@ -132,7 +130,7 @@ if(!function_exists('next_game_date'))
         {
         	return [
         		'game_date' => $team_picks->first()->game_date->modify('+1 week'),
-        		'week_count' => $team_picks->count()
+        		'week_count' => ($team_picks->count()) + 1
         	];
         }
 
