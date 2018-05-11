@@ -40,6 +40,17 @@
 	margin-right: .75rem;
 }
 
+.select {
+	width: 100%;
+	select {
+		width: 100%;
+	}
+}
+
+.no-top-padding {
+	padding-top: 0;
+}
+
 .fixture-table {
 	.team-logo {
 		width: 15%;

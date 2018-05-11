@@ -24,9 +24,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // TODO: Can't get this as migrations run after this. Need to do each individually.
-        // Ensure all this is wrapped in season checks. No Season, bail out!
-
         // Get scores from last week.
         $schedule->command('cron:get-scores')
             ->sundays()->at('05:00');
@@ -53,10 +50,11 @@ class Kernel extends ConsoleKernel
         
         // Prompt for new season input on 14th July each year.
         $schedule->command('cron:prompt-new-season')
-                ->cron('0 9 14 7 *');
+            ->cron('0 9 14 7 *');
 
-        // TODO: Get new teams every season. 
-        // Once we have the season filled out.
+        // Get new teams at start of August
+        $schedule->command('cron:get-teams')
+            ->cron('0 9 1 8 *');
     }
 
     /**

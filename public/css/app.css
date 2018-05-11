@@ -19249,18 +19249,6 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
   margin: 20px;
 }
 
-.select {
-  width: 100%;
-}
-
-.select select {
-  width: 100%;
-}
-
-.no-top-padding {
-  padding-top: 0;
-}
-
 /* Enter and leave animations can use different */
 
 /* durations and timing functions.              */
@@ -19341,6 +19329,18 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
 
 .margin-right {
   margin-right: .75rem;
+}
+
+.select {
+  width: 100%;
+}
+
+.select select {
+  width: 100%;
+}
+
+.no-top-padding {
+  padding-top: 0;
 }
 
 .fixture-table .team-logo {

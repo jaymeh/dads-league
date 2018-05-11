@@ -28,9 +28,6 @@ class PickController extends Controller
             ->get()
             ->sortByDesc('game_date')
             ->groupBy(function($player_team) {
-                // TODO: Might need to change this based on the current code.
-                // Alternatively it might be worth seeding data as if it was last season. From there we can ensure data is accessible 
-                // in the past and we are working with multiple seasons.
                 return $player_team->game_date->timestamp > now()->timestamp ? 'This Week' : $player_team->game_date->format('d/m/Y');
             });
 
