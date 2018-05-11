@@ -13,7 +13,8 @@
 
 	<section class="section">
 		<div class="container">
-			<table class="table is-fullwidth is-striped">
+			<h2 class="is-size-3">Season: <strong>{{ $season->name }}</strong></h2>
+			<table class="table is-fullwidth is-striped mt">
 				<thead>
 					<tr>
 						<td>Player Name</td>

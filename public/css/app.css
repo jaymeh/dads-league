@@ -19317,6 +19317,14 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
   text-align: center;
 }
 
+.mt {
+  margin-top: .75rem;
+}
+
+.mb {
+  margin-bottom: .75rem;
+}
+
 .box .columns {
   margin-top: 0;
   margin-left: 0;

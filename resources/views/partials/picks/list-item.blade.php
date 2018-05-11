@@ -18,18 +18,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($fixture as $fixture)
-                                <tr class="{{ $fixture->playerTeam->first()->gameStatusClass }}">
+                            @foreach($player_teams as $player_team)
+                                <tr class="{{ $player_team->gameStatusClass }}">
                                 	<td class="has-text-centered">
-                                		@if($fixture->playerTeam->first()->team_id == $fixture->home_team_id)
-                                			<strong>{{ $fixture->playerTeam->first()->player->name }}</strong>
+                                		@if($player_team->team_id == $player_team->fixture->home_team_id)
+                                			<strong>{{ $player_team->player->name }}</strong>
                                 		@endif
                                 	</td>
-                                    <td class="has-text-centered team-name">{{ $fixture->homeTeam->name }}</td>
+                                    <td class="has-text-centered team-name">{{ $player_team->fixture->homeTeam->name }}</td>
                                     
-                                    	@if($fixture->game)
+                                    	@if($player_team->fixture->game)
 	                                    	<td class="has-text-centered">
-												<strong>{{ $fixture->game->home_team_score }}</strong>
+												<strong>{{ $player_team->fixture->game->home_team_score }}</strong>
 											</td>
                                     	@else
                                     		<td></td>
@@ -37,15 +37,15 @@
                                     </td>
                                     <td class="has-text-centered">v</td>
                                     <td class="has-text-centered">
-                                    	@if($fixture->game)
-											<strong>{{ $fixture->game->away_team_score }}</strong>
+                                    	@if($player_team->fixture->game)
+											<strong>{{ $player_team->fixture->game->away_team_score }}</strong>
                                     	@endif
                                     </td>
-                                    <td class="has-text-centered team-name">{{ $fixture->awayTeam->name }}</td>
+                                    <td class="has-text-centered team-name">{{ $player_team->fixture->awayTeam->name }}</td>
                                     <td class="has-text-centered">
-                                    	@if($fixture->playerTeam->first()->team_id == $fixture->away_team_id)
+                                    	@if($player_team->team_id == $player_team->fixture->away_team_id)
                                 			<strong>
-                                				{{ $fixture->playerTeam->first()->player->name }}
+                                				{{ $player_team->player->name }}
                                 			</strong>
                                 		@endif
                                     </td>

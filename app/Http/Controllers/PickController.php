@@ -24,19 +24,18 @@ class PickController extends Controller
         $first_week = new Carbon('2017-08-12');
         
         // Get fixtures for this week wherehas and with player teams
-        $fixtures_by_player_teams = Fixture::whereHas('playerTeam')
-            ->with('playerTeam.player', 'game')
+        $player_team_by_date = PlayerTeam::with('player', 'fixture.game', 'fixture.homeTeam', 'fixture.awayTeam')
             ->get()
             ->sortByDesc('game_date')
-            ->groupBy(function($fixture) {
+            ->groupBy(function($player_team) {
                 // TODO: Might need to change this based on the current code.
                 // Alternatively it might be worth seeding data as if it was last season. From there we can ensure data is accessible 
                 // in the past and we are working with multiple seasons.
-                return $fixture->game_date->timestamp > now()->timestamp ? 'This Week' : $fixture->game_date->format('d/m/Y');
+                return $player_team->game_date->timestamp > now()->timestamp ? 'This Week' : $player_team->game_date->format('d/m/Y');
             });
 
         return view('content.picks.index')
-            ->with(compact('season', 'fixtures_by_player_teams', 'this_week_selection'));
+            ->with(compact('season', 'player_team_by_date', 'this_week_selection'));
     }
 
     /**
@@ -100,15 +99,17 @@ class PickController extends Controller
     {
         $now = now();
 
-        $this_saturday = new Carbon('this saturday');
+        $next_fixture_date = next_game_date();
+
+        $fixture_date = new Carbon($next_fixture_date);
         $season = current_season();
 
         // Find with token.
         $player_token = PickToken::where('token', $token)
             ->whereDate('expiry', '>=', $now)
-            ->with(['player.picks' => function($q) use ($this_saturday, $season) {
-                $q->where('game_date', '!=', $this_saturday);
-                $q->where('season_id', $season->id);
+            ->with(['player.picks' => function($q) use ($fixture_date, $season) {
+                $q->where('game_date', '!=', $fixture_date);
+                $q->where('player_teams.season_id', $season->id);
             }])
             ->first();
 
@@ -130,9 +131,9 @@ class PickController extends Controller
 
         $player = $player_token->player;
 
-        $excluded_ids = PlayerTeam::teamsToExclude($player->id, $this_saturday, $season);
+        $excluded_ids = PlayerTeam::teamsToExclude($player->id, $fixture_date, $season);
 
-        $grouped_fixtures = League::withFixturesByDate($this_saturday, $excluded_ids)
+        $grouped_fixtures = League::withFixturesByDate($fixture_date, $excluded_ids)
             ->map(function($league) use ($excluded_ids) {
                 $fixture_map = collect();
 
@@ -169,7 +170,7 @@ class PickController extends Controller
             return view('content.picks.no-fixtures');
         }
 
-        $all_teams_by_league = $grouped_fixtures->map(function($league) use ($this_saturday, $excluded_ids) {
+        $all_teams_by_league = $grouped_fixtures->map(function($league) use ($fixture_date, $excluded_ids) {
             return $league->fixtures->map(function($teams) use($excluded_ids, $league) {
                 $team_names = [$teams->homeTeam->id => [
                     'id' => $teams->homeTeam->id,
@@ -196,16 +197,16 @@ class PickController extends Controller
         // Disable anything that someone else picked.
 
         $active_pick = PlayerTeam::select('team_id')
-            ->whereDate('game_date', $this_saturday)
+            ->whereDate('game_date', $fixture_date)
             ->where('player_id', $player->id)
             ->first();
 
-        return view('content.picks.weekly')->with(compact('this_saturday', 'token', 'grouped_fixtures', 'player', 'all_teams', 'fixtures', 'active_pick'));
+        return view('content.picks.weekly')->with(compact('fixture_date', 'token', 'grouped_fixtures', 'player', 'all_teams', 'fixtures', 'active_pick'));
     }
 
     public function list()
     {
-        $season = current_season(true);
+        $season = current_season();
         $season_id = $season->id;
 
         // TODO: Add bail here for when no seasons found.

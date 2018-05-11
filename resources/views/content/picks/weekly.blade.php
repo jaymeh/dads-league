@@ -16,7 +16,7 @@
 
         <form action="{{ route('picks.store') }}" method="POST">
             {{ csrf_field() }}
-            <input type="hidden" name="game_date" value="{{ $this_saturday->format('Y-m-d') }}">
+            <input type="hidden" name="game_date" value="{{ $fixture_date->format('Y-m-d') }}">
             <input type="hidden" name="player_token" value="{{ $token }}">
 
 			<div class="columns is-marginless is-centered">

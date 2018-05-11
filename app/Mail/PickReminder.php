@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Player;
+use App\Models\PlayerTeam;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,8 +35,13 @@ class PickReminder extends Mailable
     {
         $url = route('index');
         $token_link = route('picks.weekly', ['token' => $this->token]);
-        $date = new Carbon('this saturday');
-        $week = week_number();
+
+        $season = current_season();
+
+        $next_game_date = next_game_date(true);
+
+        $week = $next_game_date['week_count'];
+        $date = new Carbon($next_game_date['game_date']);
 
         return $this->markdown('emails.pick-reminder')
             ->subject('Pick your teams for Week ' . $week)

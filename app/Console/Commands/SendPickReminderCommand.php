@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Mail\PickReminder;
 use App\Models\PickToken;
 use App\Models\Player;
+use App\Models\Season;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -16,7 +17,7 @@ class SendPickReminderCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'cron:send-weekly-picks';
+    protected $signature = 'cron:send-weekly-picks {season_id?}';
 
     /**
      * The console command description.
@@ -42,13 +43,16 @@ class SendPickReminderCommand extends Command
      */
     public function handle()
     {
-        // Find current season
-        $season = current_season(true);
+        $season_id = $this->argument('season_id');
 
-        if(!$season)
+        if(!$season_id)
         {
-            $this->info('No season is currently active.');
-            return;
+            // Find current season
+            $season = current_season();
+        }
+        else
+        {
+            $season = Season::whereId($season_id)->first();
         }
         
         // Clean out last weeks token.

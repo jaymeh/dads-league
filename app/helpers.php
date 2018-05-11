@@ -95,3 +95,47 @@ if(!function_exists('current_week')) {
 		return $week_number + 1;
 	}
 }
+
+if(!function_exists('next_game_date'))
+{
+	function next_game_date($with_count = false)
+	{
+		$season = current_season();
+
+		$team_picks = App\Models\PlayerTeam::select('game_date')
+            ->where('season_id', $season->id)
+            ->orderByDesc('game_date');
+
+		// Find next game date
+		if($with_count)
+		{
+			$team_picks = $team_picks
+	            ->groupBy('game_date')
+	            ->get();
+
+
+		}
+		else
+		{
+			$team_pick = $team_picks
+				->first()
+				->game_date
+				->modify('+1 week');
+		}
+
+        if(!$team_picks->count())
+        {
+        	return false;
+        }
+
+        if($with_count)
+        {
+        	return [
+        		'game_date' => $team_picks->first()->game_date->modify('+1 week'),
+        		'week_count' => $team_picks->count()
+        	];
+        }
+
+        return $team_pick;
+	}
+}

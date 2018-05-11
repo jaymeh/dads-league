@@ -13,9 +13,9 @@ class LeagueController extends Controller
 
     	if(!$season)
     	{
-            // $current_year = now()->year;
     		$season = Season::whereYear('end_date', $current_year);
     	}
+        
     	$league_table = Table::where('season_id', $season->id)
             ->with('player')
             ->orderByDesc('score')
@@ -24,6 +24,6 @@ class LeagueController extends Controller
                 return [$table->player->name => $table];
             });
 
-    	return view('content.league.index', compact('league_table'));
+    	return view('content.league.index', compact('season', 'league_table'));
     }
 }

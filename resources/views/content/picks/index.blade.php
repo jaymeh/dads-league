@@ -12,7 +12,7 @@
 	                @endif
 	            </div>
 	        </div>
-			@foreach($fixtures_by_player_teams as $date => $fixture)
+			@foreach($player_team_by_date as $date => $player_teams)
 				@include('partials.picks.list-item')
 			@endforeach
 		</div>
