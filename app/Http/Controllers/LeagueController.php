@@ -19,6 +19,7 @@ class LeagueController extends Controller
     	$league_table = Table::where('season_id', $season->id)
             ->with('player')
             ->orderByDesc('score')
+            ->orderByDesc('wins')
             ->get()
             ->mapWithKeys(function($table) {
                 return [$table->player->name => $table];

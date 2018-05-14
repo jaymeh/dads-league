@@ -17,7 +17,7 @@
     			@foreach($players as $player)
                     @if($player->picks->count())
                         <div class="column is-half-tablet is-one-third-desktop">
-                            <table class="table is-striped is-fullwidth">
+                            <table class="table is-striped is-fullwidth picks-table">
                                 <thead>
                                     <th>Week</th>
                                     <th>&nbsp;</th>
@@ -27,7 +27,7 @@
                                 <tbody>
                                     @foreach($player->picks as $i => $team)
                                         <tr>
-                                            <td class="has-text-centered">{{ week_number($team->carbon_game_date) }}</td>
+                                            <td class="has-text-centered pick-week">{{ week_number($team->carbon_game_date) }}</td>
                                             <td class="has-text-centered">
                                                 <img class="logo-small" src="{{ $team->logo }}" alt="{{ $team->name }}" />
                                             </td>
