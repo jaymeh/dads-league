@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Season;
+use App\Models\Table;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -13,7 +15,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+
     }
 
     /**
@@ -23,6 +25,22 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $season = current_season();
+
+        if(!$season)
+        {
+            $season = Season::whereYear('end_date', $current_year);
+        }
+        
+        $league_table = Table::where('season_id', $season->id)
+            ->with('player')
+            ->orderByDesc('score')
+            ->orderByDesc('wins')
+            ->get()
+            ->mapWithKeys(function($table) {
+                return [$table->player->name => $table];
+            });
+
+        return view('welcome', compact('season', 'league_table'));
     }
 }
