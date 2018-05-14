@@ -20,7 +20,7 @@
                         <tbody>
                             @foreach($player_teams as $player_team)
                                 <tr class="{{ $player_team->gameStatusClass }}">
-                                	<td class="has-text-centered">
+                                	<td class="has-text-centered person-name">
                                 		@if($player_team->team_id == $player_team->fixture->home_team_id)
                                 			<strong>{{ $player_team->player->name }}</strong>
                                 		@endif
@@ -42,7 +42,7 @@
                                     	@endif
                                     </td>
                                     <td class="has-text-centered team-name">{{ $player_team->fixture->awayTeam->name }}</td>
-                                    <td class="has-text-centered">
+                                    <td class="has-text-centered person-name">
                                     	@if($player_team->team_id == $player_team->fixture->away_team_id)
                                 			<strong>
                                 				{{ $player_team->player->name }}

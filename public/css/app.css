@@ -19351,6 +19351,10 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
   width: 30%;
 }
 
+.fixture-table .person-name {
+  width: 15%;
+}
+
 .fixture-table .disabled {
   opacity: 0.2;
 }
@@ -19375,7 +19379,11 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
   }
 
   .fixture-table .team-name {
-    width: 45%;
+    width: 35%;
+  }
+
+  .fixture-table .person-name {
+    width: 20%;
   }
 }
 

@@ -60,6 +60,10 @@
 		width: 30%;
 	}
 
+	.person-name {
+		width: 15%;
+	}
+
 	.disabled {
 		opacity: 0.2;
 	}
@@ -84,7 +88,11 @@
 
 	.fixture-table {
 		.team-name {
-			width: 45%;
+			width: 35%;
+		}
+
+		.person-name {
+			width: 20%
 		}
 	}
 }
