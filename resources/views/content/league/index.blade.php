@@ -11,8 +11,10 @@
         </div>
     </section>
 	
-	<div class="container">
-		@include('partials.league.results')
-	</div>
+    <section class="section">
+    	<div class="container">
+    		@include('partials.league.results')
+    	</div>
+    </section>
 	
 @endsection

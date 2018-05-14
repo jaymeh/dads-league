@@ -101,6 +101,8 @@ class PickController extends Controller
         $fixture_date = new Carbon($next_fixture_date);
         $season = current_season();
 
+        // dd($season->id);
+
         // Find with token.
         $player_token = PickToken::where('token', $token)
             ->whereDate('expiry', '>=', $now)

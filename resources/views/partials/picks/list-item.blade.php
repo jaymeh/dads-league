@@ -2,7 +2,7 @@
 	<article class="media">
 		<div class="media-content">
 			<div class="content">
-				<h2>Picks - <a href="">{{ $date }}</a></h2>
+				<h2>Picks - {{ $date }}</h2>
 				
 				<div class="columns is-multiline is-mobile no-mb">
 					<table class="table is-fullwidth fixture-table">

@@ -19318,6 +19318,10 @@ input[type=range].slider.is-danger .has-output-tooltip + output {
   margin-bottom: .75rem;
 }
 
+.mt-2 {
+  margin-top: 2rem;
+}
+
 .box .columns {
   margin-top: 0;
   margin-left: 0;
