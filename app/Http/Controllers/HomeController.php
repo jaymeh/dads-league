@@ -32,6 +32,8 @@ class HomeController extends Controller
             $season = Season::whereYear('end_date', $current_year);
         }
         
+        // TODO: Add this snippet where we get the league table to a helper function so that 
+        // it can be used by both this function and the league controller
         $league_table = Table::where('season_id', $season->id)
             ->with('player')
             ->orderByDesc('score')
