@@ -14,18 +14,20 @@
 		</section>
 		
 		<section class="section">
-		        <div class="columns">
-		            <div class="column is-half-desktop">
-		            	<div class="box">
-		               		@include('partials.picks.dashboard-last-week')
-		                </div>
-		            </div>
+	        <div class="columns">
+	            <div class="column is-half-desktop">
+	            	<div class="box">
+	               		@include('partials.picks.dashboard-last-week')
+	                </div>
+	            </div>
+	            @if($weekly_picks)
 		        	<div class="column is-half-desktop">
 		            	<div class="box">
 		               		@include('partials.picks.dashboard-this-week')
 		                </div>
 		            </div>
-		        </div>
+	            @endif
+	        </div>
 	    </section>
 	</div>
 

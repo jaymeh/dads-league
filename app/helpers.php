@@ -49,6 +49,7 @@ if(!function_exists('current_season')) {
 
 		$season = App\Models\Season::whereDate('start_date', '<=', $date)
 			->whereDate('end_date', '>=', $date)
+			->orderByDesc('start_date')
 			->first();
 
 		if(!$season && !$hard_check)
@@ -61,6 +62,7 @@ if(!function_exists('current_season')) {
 					$q->whereDate('end_date', '<', $date);
 					$q->orderByDesc('end_date');
 				})
+				->orderByDesc('start_date')
 				->first();
 		}
 
@@ -87,6 +89,7 @@ if(!function_exists('current_week')) {
 					$q->whereDate('end_date', '<', $date);
 					$q->orderByDesc('end_date');
 				})
+				->orderByDesc('end_date')
 				->first();
 		});
 

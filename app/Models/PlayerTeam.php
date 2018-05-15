@@ -110,6 +110,10 @@ class PlayerTeam extends Model
 
 	public function getGameStatusAttribute()
 	{
+		if(!$this->fixture)
+		{
+			dd($this);
+		}
 		if(!$this->fixture->game)
 		{
 			return false;

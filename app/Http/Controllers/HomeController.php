@@ -45,16 +45,17 @@ class HomeController extends Controller
                 return [$table->player->name => $table];
             });
 
+        $date = new Carbon('last saturday');
+
         $weekly_picks = PlayerTeam::where('season_id', $season->id)
             ->with('team', 'player')
+            ->whereDate('game_date', '>', now())
             ->orderByDesc('game_date')
             ->get()
             ->groupBy(function($pick) {
                 return $pick->game_date->format('dS F Y');
             })
             ->first();
-
-        $date = new Carbon('last saturday');
 
         if($weekly_picks)
         {
@@ -64,15 +65,23 @@ class HomeController extends Controller
 
         $player_teams = PlayerTeam::where('season_id', $season->id)
             ->with('team', 'player', 'fixture.game')
-            ->whereDate('game_date', $date)
             ->orderByDesc('game_date')
-            ->get();            
+            ->get()
+            ->groupBy(function($pick) {
+                return $pick->game_date->format('Y-m-d');
+            })
+            ->first()
+            ->flatten(1);
 
         $picks_game_date = new Carbon('this saturday');
 
         if($weekly_picks)
         {
             $picks_game_date = $weekly_picks[0]->game_date->format('dS F Y');
+        }
+
+        if(!$weekly_picks) {
+            $date = $player_teams->first()->game_date;
         }
 
         $date = $date->format('dS F Y');

@@ -44,7 +44,7 @@ class WeeklyResultsEmail extends Command
     public function handle()
     {
         // Find current season
-        $season = current_season();
+        $season = current_season(true);
 
         if(!$season)
         {

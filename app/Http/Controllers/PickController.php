@@ -21,10 +21,10 @@ class PickController extends Controller
      */
     public function index(Request $request)
     {
-        $first_week = new Carbon('2017-08-12');
-        
+        $season = current_season();
         // Get fixtures for this week wherehas and with player teams
         $player_team_by_date = PlayerTeam::with('player', 'fixture.game', 'fixture.homeTeam', 'fixture.awayTeam')
+            ->where('season_id', $season->id)
             ->get()
             ->sortByDesc('game_date')
             ->groupBy(function($player_team) {

@@ -31,7 +31,10 @@ class WeeklyResults extends Mailable
      */
     public function build()
     {
-        return $this->subject('Weekly Results for ' . $this->results->first()->game_date->format('l dS F Y'))
-            ->markdown('emails.weekly-results');
+        if($this->results->count())
+        {
+            return $this->subject('Weekly Results for ' . $this->results->first()->game_date->format('l dS F Y'))
+                ->markdown('emails.weekly-results');
+        }
     }
 }
