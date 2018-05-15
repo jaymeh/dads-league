@@ -22,6 +22,12 @@ class PickController extends Controller
     public function index(Request $request)
     {
         $season = current_season();
+
+        if(!$season)
+        {
+            // TODO: Return an error here or show no content...
+        }
+
         // Get fixtures for this week wherehas and with player teams
         $player_team_by_date = PlayerTeam::with('player', 'fixture.game', 'fixture.homeTeam', 'fixture.awayTeam')
             ->where('season_id', $season->id)
