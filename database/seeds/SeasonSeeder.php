@@ -21,11 +21,11 @@ class SeasonSeeder extends Seeder
 
     	// Add fixtures 20 weeks from now.
     	$future_date = new Carbon\Carbon('this saturday');
-        $future_date->modify('-1 year');
+        $future_date->modify('-20 weeks');
     	$future_date = $future_date->modify('+20 weeks');
 
     	$now = new Carbon\Carbon('this saturday');
-        $now->modify('-1 year');
+        $now->modify('-20 weeks');
 
     	// Seed a season
     	$season = factory(App\Models\Season::class)->create([

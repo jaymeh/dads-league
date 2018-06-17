@@ -102,12 +102,8 @@ class PickController extends Controller
     {
         $now = now();
 
-        $next_fixture_date = next_game_date();
-
-        $fixture_date = new Carbon($next_fixture_date);
+        $fixture_date = new Carbon('this saturday');
         $season = current_season();
-
-        // dd($season->id);
 
         // Find with token.
         $player_token = PickToken::where('token', $token)
