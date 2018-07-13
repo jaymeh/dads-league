@@ -85,7 +85,11 @@ class HomeController extends Controller
         }
 
         if(!$weekly_picks) {
-            $date = $player_teams->first()->game_date;
+            if($player_teams) {
+                $date = $player_teams->first()->game_date;
+            } else {
+                $date = now();
+            }
         }
 
         $date = $date->format('dS F Y');
