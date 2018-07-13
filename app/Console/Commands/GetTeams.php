@@ -41,9 +41,7 @@ class GetTeams extends Command
     public function handle()
     {
         $leagues = League::get()->pluck('slug', 'id');
-
         $season_id = $this->argument('seasonId');
-
         $season = Season::whereId($season_id)->first();
 
         if(!$season)
@@ -52,8 +50,10 @@ class GetTeams extends Command
 
             if(!$season)
             {
-                $this->error('No Active Season');
-                return;
+                $date = now();
+                $season = Season::whereYear('start_date', $date->format('Y'))
+                    ->whereYear('end_date', $date->modify('+1 year')->format('Y'))
+                    ->first();
             }
         }
 
