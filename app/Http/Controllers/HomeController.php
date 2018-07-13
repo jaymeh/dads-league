@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Player;
 use App\Models\PlayerTeam;
 use App\Models\Season;
 use App\Models\Table;
@@ -28,10 +29,12 @@ class HomeController extends Controller
     public function index()
     {
         $season = current_season();
-
         if(!$season)
         {
-            
+            $date = now();
+            $season = Season::whereYear('start_date', $date->format('Y'))
+                ->whereYear('end_date', $date->modify('+1 year')->format('Y'))
+                ->first();
         }
         
         // TODO: Add this snippet where we get the league table to a helper function so that 
@@ -44,6 +47,22 @@ class HomeController extends Controller
             ->mapWithKeys(function($table) {
                 return [$table->player->name => $table];
             });
+
+        if(!$league_table->count()) {
+            // Grab Players and add each one into there with default values.
+            $league_table = Player::orderBy('name')
+                ->get()
+                ->mapWithKeys(function($player) {
+                    return [
+                        $player->name => (object) [
+                            'score' => 0,
+                            'wins' => 0,
+                            'losses' => 0,
+                            'draws' => 0
+                        ]
+                    ];
+                });
+        }
 
         $date = new Carbon('last saturday');
 
