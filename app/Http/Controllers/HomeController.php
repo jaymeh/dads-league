@@ -31,7 +31,7 @@ class HomeController extends Controller
 
         if(!$season)
         {
-            $season = Season::whereYear('end_date', $current_year);
+            
         }
         
         // TODO: Add this snippet where we get the league table to a helper function so that 
@@ -70,8 +70,12 @@ class HomeController extends Controller
             ->groupBy(function($pick) {
                 return $pick->game_date->format('Y-m-d');
             })
-            ->first()
-            ->flatten(1);
+            ->first();
+
+        if($player_teams) {
+            $player_teams = $player_teams
+                ->flatten(1);
+        }
 
         $picks_game_date = new Carbon('this saturday');
 
