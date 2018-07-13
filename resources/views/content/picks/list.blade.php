@@ -11,10 +11,11 @@
         </div>
     </section>
 
+    
     <section class="section">
     	<div class="container">
     		<div class="columns is-multiline">
-    			@foreach($players as $player)
+    			@forelse($players as $player)
                     @if($player->picks->count())
                         <div class="column is-half-tablet is-one-third-desktop">
                             <table class="table is-striped is-fullwidth picks-table">
@@ -43,8 +44,13 @@
                             </table>
                         </div>
                     @endif
-    			@endforeach
+                @empty
+                    <div class="column">
+                        <p>There are currently no picks this week. Please check back later.</p>
+                    </div>
+                @endforelse
     		</div>
     	</div>
     </section>
+    
 @endsection

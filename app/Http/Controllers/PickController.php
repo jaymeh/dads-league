@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PickSaveRequest;
+use App\Models\Season;
 use App\Models\Team;
 use App\Models\{Fixture, League, PickToken, Player, PlayerTeam};
 use Carbon\Carbon;
@@ -25,7 +26,10 @@ class PickController extends Controller
 
         if(!$season)
         {
-            // TODO: Return an error here or show no content...
+            $date = now();
+            $season = Season::whereYear('start_date', $date->format('Y'))
+                ->whereYear('end_date', $date->modify('+1 year')->format('Y'))
+                ->first();
         }
 
         // Get fixtures for this week wherehas and with player teams
@@ -210,12 +214,15 @@ class PickController extends Controller
         $season = current_season();
 
         if(!$season) {
-            return abort(404);    
+            $date = now();
+            $season = Season::whereYear('start_date', $date->format('Y'))
+                ->whereYear('end_date', $date->modify('+1 year')->format('Y'))
+                ->first(); 
         }
 
         $season_id = $season->id;
-
-        $players = Player::with(['picks' => function($q) use($season_id) {
+        $players = Player::whereHas('picks')
+            ->with(['picks' => function($q) use($season_id) {
                 $q->where('player_teams.season_id', $season_id);
                 $q->orderByDesc('game_date');
             }])
@@ -223,6 +230,6 @@ class PickController extends Controller
             ->sortByDesc('name');
 
         return view('content.picks.list')
-            ->with(compact('players', 'weeks'));
+            ->with(compact('players'));
     }
 }
