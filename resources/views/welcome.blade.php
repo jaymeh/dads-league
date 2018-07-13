@@ -15,11 +15,13 @@
 		
 		<section class="section">
 	        <div class="columns">
-	            <div class="column is-half-desktop">
-	            	<div class="box">
-	               		@include('partials.picks.dashboard-last-week')
-	                </div>
-	            </div>
+	        	@if($player_teams && $player_teams->count())
+		            <div class="column is-half-desktop">
+		            	<div class="box">
+		               		@include('partials.picks.dashboard-last-week')
+		                </div>
+		            </div>
+	            @endif
 	            @if($weekly_picks)
 		        	<div class="column is-half-desktop">
 		            	<div class="box">
