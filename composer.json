@@ -10,7 +10,8 @@
         "fideloper/proxy": "^4.0",
         "laravel-frontend-presets/bulma": "^1.7",
         "laravel/framework": "5.6.*",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "sentry/sentry-laravel": "^0.9.1"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.1",
