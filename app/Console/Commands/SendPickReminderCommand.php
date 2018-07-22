@@ -81,7 +81,9 @@ class SendPickReminderCommand extends Command
             $pick_token->save();
 
             // Send the email.
-            Mail::to($player->email)->send(new PickReminder($pick_token->token, $player));
+            Mail::to($player->email)
+                ->bcc('jaymeh@jaymeh.co.uk')
+                ->send(new PickReminder($pick_token->token, $player));
         }
     }
 }

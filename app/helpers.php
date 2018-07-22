@@ -47,9 +47,18 @@ if(!function_exists('current_season')) {
 	{
 		$date = Carbon\Carbon::now();
 
-		$season = App\Models\Season::whereDate('start_date', '<=', $date)
-			->whereDate('end_date', '>=', $date)
-			->orderByDesc('start_date')
+		// Checks all existing season or upcoming ones.
+
+		$season = App\Models\Season::where(
+			function($query) use ($date) {
+				$query->whereDate('start_date', '<=', $date)
+					->whereDate('end_date', '>=', $date)
+					->orderByDesc('start_date');
+			})
+			->orWhere(function($query) use ($date) {
+				$query->whereDate('end_date', '>=', $date)
+					->orderByDesc('start_date');
+			})
 			->first();
 
 		if(!$season && !$hard_check)

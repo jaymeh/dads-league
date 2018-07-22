@@ -58,7 +58,7 @@ class GetWeeklyFixtures extends Command
         $fixture_month = $fixture_date->format('M');
         $fixture_day = $fixture_date->format('d');
 
-        // dd("https://www.theguardian.com/football/fixtures/more/$fixture_year/$fixture_month/$fixture_day");
+        // "https://www.theguardian.com/football/fixtures/more/$fixture_year/$fixture_month/$fixture_day
 
         $crawler = $client->request('GET', "https://www.theguardian.com/football/fixtures/more/$fixture_year/$fixture_month/$fixture_day");
 

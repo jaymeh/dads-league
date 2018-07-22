@@ -60,9 +60,16 @@ class LastChancePickReminder extends Command
 
         foreach($players_not_picked as $player)
         {
-            Mail::to($player->email)
-                ->cc('mark@shelleyfootball.club')
-                ->send(new LastChanceEmail($player->token->token));
+            if($player->token) {
+                Mail::to($player->email)
+                    ->cc('mark@shelleyfootball.club')
+                    ->send(new LastChanceEmail($player->token->token));
+            } else {
+                Mail::raw('Couldn\'t find token for player with email of ' . $player->email . '.', function($message) {
+                    $message->to('jaymeh@jaymeh.co.uk');
+                    $message->subject('Couldn\'t find token for player!');
+                });
+            }
         }
     }
 }

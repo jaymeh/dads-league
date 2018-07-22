@@ -46,7 +46,7 @@ class WeeklyResultsEmail extends Command
         // Find current season
         $season = current_season(true);
 
-        if(!$season)
+        if(!$season || $season->start_date > now())
         {
             $this->info('No season is currently active.');
             return;
@@ -57,6 +57,11 @@ class WeeklyResultsEmail extends Command
                 ->with('player', 'team', 'fixture.game')
                 ->where('game_date', $last_week)
                 ->get();
+
+        if(!$results->count()) {
+            $this->info('No results this week.');
+            return;
+        }
 
         $season = current_season();
 
@@ -71,9 +76,8 @@ class WeeklyResultsEmail extends Command
         // Get all active players emails.
         $players = Player::all()->pluck('email');
 
-        // $to = $players->implode(',');
-
         Mail::to($players)
+            ->bcc('jaymeh@jaymeh.co.uk')
             ->send(new WeeklyResults($results, $table));
     }
 }

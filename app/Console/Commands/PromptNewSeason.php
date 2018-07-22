@@ -39,7 +39,7 @@ class PromptNewSeason extends Command
      */
     public function handle()
     {
-        Mail::to('jaymehsykes@gmail.com')
+        Mail::to('jaymeh@jaymeh.co.uk')
             ->send(new NewSeasonPromptMail());
     }
 }

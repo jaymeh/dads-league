@@ -43,7 +43,7 @@ class GetScores extends Command
     {
         $season = current_season(true);
 
-        if(!$season)
+        if(!$season || $season->start_date > Carbon::now())
         {
             $this->info('No season is currently active.');
             return;
@@ -52,13 +52,12 @@ class GetScores extends Command
         $client = new Client();
         $content = [];
 
-        $match_day = $season->start_date;
+        $match_day = new Carbon($season->start_date);
 
         $today = Carbon::now();
         $today->setTime(0, 0, 0);
 
         $days_left = $match_day->diff($today)->days;
-
         $bar = $this->output->createProgressBar($days_left);
 
         $fixtures = Fixture::get();
