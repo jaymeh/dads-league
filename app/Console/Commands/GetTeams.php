@@ -6,6 +6,10 @@ use App\Models\Season;
 use App\Models\{ League, Team };
 use Goutte\Client;
 use Illuminate\Console\Command;
+use Illuminate\Http\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 class GetTeams extends Command
 {
@@ -68,24 +72,22 @@ class GetTeams extends Command
                 return $node->text();
             });
 
-            $logos = $logoCrawler->filter('span.team-crest')->extract(['style']);
+            $logos = $logoCrawler->filter('img.team-crest')->extract(['src']);
+
             foreach($logos as $key => $logo)
             {
-                preg_match_all('/\((.*?)\)/', $logo, $matches);
-
-                if(isset($matches[1]))
-                {
-                    $logos[$key] = str_replace('60', '120', $matches[1][0]);
-                }
+                $logos[$key] = str_replace('60', '120', $logo);
             }
 
             foreach($teams as $key => $team)
             {
                 $team_name = trim(preg_replace('/\s\s+/', ' ', $team));
 
+                $new_logo = $this->saveLogo($team_name, $logos[$key]);
+
                 $clean_teams[] = [
                     'name' => $team_name,
-                    'logo' => isset($logos[$key]) ? $logos[$key] : null,
+                    'logo' => $new_logo,
                     'league_id' => $league_id,
                     'season_id' => $season->id
                 ];
@@ -99,5 +101,22 @@ class GetTeams extends Command
                 'season_id' => $season->id
             ], $team);
         }
+    }
+
+    private function saveLogo($name, $logo) {
+        $image_contents = @file_get_contents($logo);
+
+        if(!$image_contents) {
+            return;
+        }
+
+        $logo_name = str_slug($name);
+        $image_path = "/assets/img/teams/$logo_name.png";
+        $save_path = public_path($image_path);
+        $save = file_put_contents($save_path, $image_contents);
+
+        $base_url = URL::to('/');
+
+        return $base_url . $image_path;
     }
 }
