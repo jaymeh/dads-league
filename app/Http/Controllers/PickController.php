@@ -104,14 +104,14 @@ class PickController extends Controller
      */
     public function weeklyPick($token)
     {
-        $now = now();
+        $now = new Carbon('now');
 
         $fixture_date = new Carbon('this saturday');
         $season = current_season();
 
         // Find with token.
         $player_token = PickToken::where('token', $token)
-            ->whereDate('expiry', '>=', $now)
+            ->whereDate('expiry', '>=', $now->toDateString())
             ->with(['player.picks' => function($q) use ($fixture_date, $season) {
                 $q->where('game_date', '!=', $fixture_date);
                 $q->where('player_teams.season_id', $season->id);
