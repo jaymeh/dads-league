@@ -1,4 +1,4 @@
-<h2 class="is-size-3 has-text-centered">Teams for <strong>{{ $date }}</strong></h2>
+<h2 class="is-size-3 has-text-centered">Teams from <strong>{{ $date }}</strong></h2>
 
 <article class="media">
 	<div class="media-content">
