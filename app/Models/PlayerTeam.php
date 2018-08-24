@@ -24,6 +24,12 @@ class PlayerTeam extends Model
         'game_date'
     ];
 
+    protected $game_status_values = [
+    	'Win' => 3,
+    	'Draw' => 1,
+    	'Lose' => 0
+    ];
+
 	/**
 	 * Get the route key for the model.
 	 *
@@ -112,7 +118,7 @@ class PlayerTeam extends Model
 	{
 		if(!$this->fixture)
 		{
-			dd($this);
+			return false;
 		}
 		if(!$this->fixture->game)
 		{
@@ -163,6 +169,21 @@ class PlayerTeam extends Model
 		}
 
 		return $map[$status];
+	}
+
+	/**
+	 * Assigns the win, lose and draw conditions to a number so they can 
+	 * easily be sorted.
+	 * @return [type] [description]
+	 */
+	public function getGameStatusSortAttribute() {
+		$status = $this->gameStatus;
+
+		if(isset($this->game_status_values[$status])) {
+			return $this->game_status_values[$status];
+		}
+
+		return false;
 	}
 
 	public function season()

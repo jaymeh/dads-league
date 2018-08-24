@@ -94,6 +94,7 @@ class HomeController extends Controller
 
         if($player_teams) {
             $player_teams = $player_teams
+                ->sortByDesc('gameStatusSort')
                 ->flatten(1);
         }
 
