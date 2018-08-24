@@ -84,6 +84,7 @@ class HomeController extends Controller
 
         $player_teams = PlayerTeam::where('season_id', $season->id)
             ->with('team', 'player', 'fixture.game')
+            ->whereHas('fixture.game')
             ->orderByDesc('game_date')
             ->get()
             ->groupBy(function($pick) {
