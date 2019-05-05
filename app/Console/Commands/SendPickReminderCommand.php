@@ -7,8 +7,10 @@ use App\Models\PickToken;
 use App\Models\Player;
 use App\Models\Season;
 use Carbon\Carbon;
+use App\Models\Fixture;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Foundation\Application;
 
 class SendPickReminderCommand extends Command
 {
@@ -64,10 +66,20 @@ class SendPickReminderCommand extends Command
         // Clean out last weeks token.
         PickToken::query()->truncate();
 
+        // Check if there are any picks this week
+        $fixture_date = new Carbon('2018/08/04 00:21:00');
+        $fixture_count = Fixture::whereDate('game_date', '=', $fixture_date->toDateString())->count();
+
+        if(!$fixture_count) {
+            Mail::raw('There are no fixtures to pick from this week.', function ($message) {
+                $message->to('jaymehsykes@gmail.com')
+                    ->subject('No picks this week.');
+            });
+            return;
+        }
+
         // Get all players
         $players = Player::get();
-
-        $picks = [];
 
         foreach($players as $player)
         {
@@ -79,6 +91,11 @@ class SendPickReminderCommand extends Command
             $pick_token->expiry = $expiry;
 
             $pick_token->save();
+
+            $environment = \App::environment();
+            if ($environment == 'local') {
+                sleep(6);
+            }
 
             // Send the email.
             Mail::to($player->email)
