@@ -18,14 +18,13 @@ class HomepageTest extends TestCase
         factory(Season::class)->create();
     }
     /**
-     * A basic test example.
+     * Tests the index page is working.
      *
      * @return void
      */
-    public function testBasicTest()
+    public function testIndex()
     {
         $response = $this->get('/');
-
         $response->assertStatus(200);
     }
 }
