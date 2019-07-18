@@ -56,8 +56,6 @@ class LastChancePickReminder extends Command
             ->with('token')
             ->get();
 
-        // dd($players_not_picked);
-
         foreach($players_not_picked as $player)
         {
             if($player->token) {

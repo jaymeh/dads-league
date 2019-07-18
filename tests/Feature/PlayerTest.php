@@ -1,73 +1,161 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Unit;
 
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use App\Models\User;
+use Tests\TestCase;
 
-class PlayerTest extends TestCase
+class Player extends TestCase
 {
-    use WithFaker;
+	use WithFaker;
 
-    /**
-     * Tests when you are not authenticated, you can't access 
-     * player screens.
-     */
-    public function testUnauthenticatedPlayersRedirects() 
-    {
-        // Failure getting player index.
-        $response = $this->get('/players');
-        $response->assertRedirect('/login');
+	/** @test */
+	public function an_unauthenticated_user_cannot_see_player_list()
+	{
+		// Go to player page when logged out
+		// We should be redirected to the login page
+		$response = $this->get(route('players.index'));
 
-        // Failure getting create screen.
-        $response = $this->get('/players/create');
-        $response->assertRedirect('/login');
+		$response
+			->assertRedirect('/login');
+	}
 
-        // Failure creating player.
-        $playerEmail = $this->faker->email;
-        $newPlayer = [
-            'name' => $this->faker->name,
-            'email' => $playerEmail
-        ];
+	/** @test */
+	public function an_authenticated_user_can_see_players()
+	{
+		// Mock a player.
+		$user = factory(\App\Models\User::class)->create();
+		$player = factory(\App\Models\Player::class)->create();
 
-        $response = $this->post('/players', $newPlayer);
-        $response->assertRedirect('/login');
+		$response = $this->actingAs($user)
+			->get(route('players.index'));
 
-        $this->assertDatabaseMissing('players', ['email' => $playerEmail]);
-    }
+		$response->assertStatus(200)
+			->assertSee($player->name);
+	}
 
-    /**
-     * Tests that when you are authenticated you can 
-     * access the player index.
-     */
-    public function testAuthenticatedPlayersIndex() 
-    {
-        // Setup user.
-        $authenticatableUser = factory(User::class)->create();
+	/** @test */
+	public function an_unauthenticated_user_cannot_add_players()
+	{
+		$name = $this->faker->name;
+		$email = $this->faker->email;
 
-        // Test you can get to the player list.
-        $response = $this->actingAs($authenticatableUser)->get('/players');
-        $response->assertStatus(200);
-    }
+		$response = $this
+			->post(route('players.store'), [
+				$name,
+				$email
+			]);
 
-    /**
-     * Tests you can create a new player when authenticated.
-     */
-    public function testAuthenticatedPlayersCreate() 
-    {
-        // Setup player.
-        $playerEmail = $this->faker->email;
-        $newPlayer = [
-            'name' => $this->faker->name,
-            'email' => $playerEmail
-        ];
+		$response->assertRedirect('/login');
 
-        // Add user and ensure they have been created.
-        $authenticatableUser = factory(User::class)->create();
-        $response = $this->actingAs($authenticatableUser)->post('/players', $newPlayer);
-        $response->assertRedirect('/players');
+		$this->assertDatabaseMissing('players', [
+			'name' => $name,
+			'email' => $email
+		]);
+	}
 
-        $this->assertDatabaseHas('players', ['email' => $playerEmail]);
-    }
+	/** @test */
+	public function an_authenticated_user_can_add_players()
+	{
+		$user = factory(\App\Models\User::class)->create();
+
+		$name = $this->faker->name;
+		$email = $this->faker->email;
+
+		$response = $this
+			->actingAs($user)
+			->post(route('players.store'), [
+				'name' => $name,
+				'email' => $email
+			]);
+
+		$this->assertDatabaseHas('players', [
+			'name' => $name,
+			'email' => $email
+		]);
+	}
+
+	/** @test */
+	public function an_unauthenticated_user_cannot_delete_players()
+	{
+		$player = factory(\App\Models\Player::class)->create();
+
+		$response = $this
+			->delete(route('players.destroy', $player));
+
+		$response->assertRedirect('/login');
+
+		$this->assertDatabaseHas('players', [
+			'name' => $player->name,
+			'email' => $player->email
+		]);
+	}
+
+	/** @test */
+	public function an_authenticated_user_can_delete_players()
+	{
+		$player = factory(\App\Models\Player::class)->create();
+		$user = factory(\App\Models\User::class)->create();
+
+		$response = $this
+			->actingAs($user)
+			->delete(route('players.destroy', $player));
+
+		$response->assertRedirect(route('players.index'));
+
+		$this->assertDatabaseMissing('players', [
+			'name' => $player->name,
+			'email' => $player->email
+		]);
+	}
+
+	/** @test */
+	public function an_unauthenticated_user_cannot_edit_players()
+	{
+		$player = factory(\App\Models\Player::class)->create();
+
+		$new_player = $player;
+		$new_player->name = $this->faker->name;
+		$new_player->email = $this->faker->safeEmail;
+
+		$response = $this
+			->put(route('players.update', $new_player));
+
+		$response->assertRedirect('/login');
+
+		$this->assertDatabaseMissing('players', [
+			'name' => $new_player->name,
+			'email' => $new_player->email
+		]);
+	}
+
+	/** @test */
+	public function an_authenticated_user_can_edit_players()
+	{
+		$player = factory(\App\Models\Player::class)->create();
+		$user = factory(\App\Models\User::class)->create();
+
+		$new_player_name = $this->faker->name;
+		$new_player_email = $this->faker->safeEmail;
+
+		$response = $this
+			->actingAs($user)
+			->patch(route('players.update', $player->id), [
+				'name' => $new_player_name,
+				'email' => $new_player_email
+			]);
+
+		$response->assertRedirect(route('players.index'));
+
+		$this->assertDatabaseHas('players', [
+			'name' => $new_player_name,
+			'email' => $new_player_email
+		]);
+
+		$this->assertDatabaseMissing('players', [
+			'name' => $player->name,
+			'email' => $player->email
+		]);
+	}
 }

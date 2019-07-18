@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
-use App\Models\Season;
 
 class HomepageTest extends TestCase
 {
@@ -13,16 +12,14 @@ class HomepageTest extends TestCase
     public function setUp() 
     {
         parent::setUp();
-        
-        // Create a new season to use.
-        factory(Season::class)->create();
     }
     /**
+     * @test
      * Tests the index page is working.
      *
      * @return void
      */
-    public function testIndex()
+    public function the_index_page_returns_a_successful_response()
     {
         $response = $this->get('/');
         $response->assertStatus(200);
