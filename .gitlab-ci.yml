@@ -12,9 +12,11 @@ build:
 environment:
   stage: build
   script:
-    - cp "$ENVIRONMENT" "$(pwd)/.env"
-    - cat .env
-    - cat "$(pwd)/.env"
+    - mv "$ENVIRONMENT" "$(pwd)/.env"
+  artifacts:
+    paths:
+      - .env
+    untracked: true
 
 test:
   stage: test
