@@ -22,5 +22,6 @@ test:
   stage: test
   dependencies: 
     - build
+    - environment
   script:
     vendor/bin/phpunit
