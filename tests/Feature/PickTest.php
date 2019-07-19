@@ -62,4 +62,22 @@ class PickTest extends TestCase
         $response->assertSeeText($player->name);
         $response->assertSeeText($team->name);
     }
+
+    /** @test */
+    public function check_player_cant_see_not_picked_and_can_see_picked() {
+        $fixture = factory(Fixture::class)->create(['game_date' => new Carbon('this saturday')]);
+        $player = factory(Player::class)->create();
+
+        $team = Team::whereId($fixture->away_team_id)->first();
+
+        $response = $this->get('/picks/list');
+        $response->assertDontSeeText($player->name);
+        $response->assertDontSeeText($team->name);
+
+        factory(PlayerTeam::class)->create(['fixture_id' => $fixture->id, 'team_id' => $fixture->away_team_id, 'player_id' => $player->id]);
+
+        $response = $this->get('/picks/list');
+        $response->assertSeeText($player->name);
+        $response->assertSeeText($team->name);
+    }
 }
