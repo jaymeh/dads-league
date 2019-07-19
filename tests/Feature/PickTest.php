@@ -3,15 +3,11 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\League;
 use App\Models\Fixture;
 use App\Models\Player;
 use App\Models\PlayerTeam;
 use App\Models\Team;
-use App\Models\Season;
-use App\Http\Controllers\PickController;
 use Illuminate\Support\Carbon;
 
 class PickTest extends TestCase
@@ -71,13 +67,13 @@ class PickTest extends TestCase
         $team = Team::whereId($fixture->away_team_id)->first();
 
         $response = $this->get('/picks/list');
-        $response->assertDontSeeText($player->name);
+        $response->assertDontSeeText(e($player->name));
         $response->assertDontSeeText($team->name);
 
         factory(PlayerTeam::class)->create(['fixture_id' => $fixture->id, 'team_id' => $fixture->away_team_id, 'player_id' => $player->id]);
 
         $response = $this->get('/picks/list');
-        $response->assertSeeText($player->name);
+        $response->assertSeeText(e($player->name));
         $response->assertSeeText($team->name);
     }
 }
