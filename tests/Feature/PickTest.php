@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\League;
 use App\Models\Fixture;
+use App\Models\PickToken;
 use App\Models\Player;
 use App\Models\PlayerTeam;
 use App\Models\Team;
@@ -67,6 +68,7 @@ class PickTest extends TestCase
         $team = Team::whereId($fixture->away_team_id)->first();
 
         $response = $this->get('/picks/list');
+
         $response->assertDontSeeText(e($player->name));
         $response->assertDontSeeText($team->name);
 
@@ -76,4 +78,28 @@ class PickTest extends TestCase
         $response->assertSeeText(e($player->name));
         $response->assertSeeText($team->name);
     }
+
+    /** @test */
+    public function if_no_token_exists_weekly_picks_page_returns_not_found() {
+        $response = $this->get('/picks/weekly/jldfjklsfksdjfklasfjl');
+        $response->assertStatus(302);
+        $response->assertRedirect('/picks');
+    }
+
+    /** @test */
+    public function if_token_exists_assert_we_get_pick_page() {
+        $player = factory(Player::class)->create();
+        $token = factory(PickToken::class)->create(['player_id' => $player->id]);
+
+        $league_id = League::get()->first()->id;
+
+        $fixture = factory(Fixture::class)->create(['league_id' => $league_id]);
+
+        $response = $this->get("/picks/weekly/" . $token->token);
+        $response->assertStatus(200);
+        $response->assertSeeText(e($player->name));
+        $response->assertSee($fixture->home_team_id);
+    }
+
+    // TODO: Test for team not appearing in list that shouldn't
 }
