@@ -2,7 +2,7 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(App\Models\PickToken::class, function (Faker $faker) {
+$factory->define(App\Models\PickToken::class, function (Faker $faker, $attributes) {
 	$player = App\Models\Player::inRandomOrder()->first();
 
 	$expiry = new Carbon\Carbon('this saturday');
@@ -10,7 +10,7 @@ $factory->define(App\Models\PickToken::class, function (Faker $faker) {
 
     return [
     	'expiry' => $expiry,
-    	'player_id' => $player->id,
+    	'player_id' => $attributes['player_id'] ?: $player->id,
     	'active' => 1,
     ];
 });
