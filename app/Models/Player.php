@@ -26,4 +26,9 @@ class Player extends Model
     {
         return $this->hasOne(PickToken::class);
     }
+
+    public function table()
+    {
+        return $this->hasMany(Table::class, 'tables');
+    }
 }
