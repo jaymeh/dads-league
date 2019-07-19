@@ -36,7 +36,6 @@ class PickTest extends TestCase
         
         $team = Team::whereId($fixture->home_team_id)->first();
 
-        // dd(Season::all()->first());
         $response = $this->get('/picks');
         $response->assertDontSeeText($player->name);
         $response->assertDontSeeText($team->name);
