@@ -9,6 +9,11 @@ build:
       - vendor
     untracked: true
 
+environment:
+  stage: build
+  script:
+    echo "$ENVIRONMENT" > "$(pwd)/.env"
+
 test:
   stage: test
   dependencies: 
