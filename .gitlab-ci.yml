@@ -12,7 +12,9 @@ build:
 environment:
   stage: build
   script:
-    cp "$ENVIRONMENT" "$(pwd)/.env"
+    - cp "$ENVIRONMENT" "$(pwd)/.env"
+    - cat .env
+    - cat "$(pwd)/.env"
 
 test:
   stage: test
