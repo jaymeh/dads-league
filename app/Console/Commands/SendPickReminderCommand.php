@@ -67,7 +67,7 @@ class SendPickReminderCommand extends Command
         PickToken::query()->truncate();
 
         // Check if there are any picks this week
-        $fixture_date = new Carbon('2018/08/04 00:21:00');
+        $fixture_date = new Carbon('this saturday');
         $fixture_count = Fixture::whereDate('game_date', '=', $fixture_date->toDateString())->count();
 
         if(!$fixture_count) {
