@@ -51,12 +51,12 @@ class PickTest extends TestCase
 
         // Create a player
         $player = factory(Player::class)->create();
-        $pick = factory(PlayerTeam::class)->create(['fixture_id' => $fixture->id, 'team_id' => $fixture->home_team_id, 'player_id' => $player->id]);
+        factory(PlayerTeam::class)->create(['fixture_id' => $fixture->id, 'team_id' => $fixture->home_team_id, 'player_id' => $player->id]);
 
         $team = Team::whereId($fixture->home_team_id)->first();
 
         $response = $this->get('/picks');
-        $response->assertSeeText($player->name);
+        $response->assertSeeText(e($player->name));
         $response->assertSeeText($team->name);
     }
 
