@@ -36,7 +36,7 @@ $factory->define(App\Models\Fixture::class, function (Faker $faker, $attributes)
 	}
 
     return [
-        'league_id' => $league,
+        'league_id' => isset($attributes['league_id']) ? $attributes['league_id'] : $league,
         'home_team_id' => $teams->first(),
         'away_team_id' => $teams->last(),
         'game_date' => $date

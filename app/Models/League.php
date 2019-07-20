@@ -15,13 +15,13 @@ class League extends Model
     {
         return $query->with([
                 'fixtures' => function($q) use($game_date) {
-                    $q->whereDate('game_date', $game_date);
+                    $q->where('game_date', $game_date);
                 },
                 'fixtures.homeTeam',
                 'fixtures.awayTeam'
             ])
             ->whereHas('fixtures', function($q) use($game_date) {
-                $q->whereDate('game_date', $game_date);
+                $q->where('game_date', $game_date);
             })
             ->get()
             ->map(function($result) use ($excluded_team_ids) {

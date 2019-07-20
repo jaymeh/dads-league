@@ -1,0 +1,27 @@
+image: jaymehs/laravel-phpunit-envoy:7.2
+
+build:
+  stage: build
+  script:
+    composer install
+  artifacts:
+    paths:
+      - vendor
+    untracked: true
+
+environment:
+  stage: build
+  script:
+    - mv "$ENVIRONMENT" "$(pwd)/.env"
+  artifacts:
+    paths:
+      - .env
+    untracked: true
+
+test:
+  stage: test
+  dependencies: 
+    - build
+    - environment
+  script:
+    vendor/bin/phpunit
