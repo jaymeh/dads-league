@@ -32,7 +32,7 @@ class Player extends TestCase
 			->get(route('players.index'));
 
 		$response->assertStatus(200)
-			->assertSee($player->name);
+			->assertSeeText(e($player->name));
 	}
 
 	/** @test */
