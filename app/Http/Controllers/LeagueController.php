@@ -22,7 +22,9 @@ class LeagueController extends Controller
     	}
         
     	$league_table = Table::where('season_id', $season->id)
-            ->with('player')
+            ->with(['player' => function($q) {
+                $q->where('disabled', 0);
+            }])
             ->orderByDesc('score')
             ->orderByDesc('wins')
             ->get()
@@ -33,6 +35,7 @@ class LeagueController extends Controller
         if(!$league_table->count()) {
             // Grab Players and add each one into there with default values.
             $league_table = Player::orderBy('name')
+                ->where('disabled', 0)
                 ->get()
                 ->mapWithKeys(function($player) {
                     return [
