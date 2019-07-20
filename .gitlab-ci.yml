@@ -1,4 +1,4 @@
-image: composer
+image: jaymehs/laravel-phpunit-envoy:7.2
 
 build:
   stage: build
