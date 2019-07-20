@@ -44,7 +44,7 @@ class PlayerController extends Controller
      */
     public function store(PlayerAddRequest $request)
     {
-        $input = $request->only(['name', 'email']);
+        $input = $request->only(['name', 'email', 'disabled']);
 
         $player = new Player;
         $player->fill($input);

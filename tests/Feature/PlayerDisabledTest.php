@@ -80,4 +80,16 @@ class PlayerDisabledTest extends TestCase
         $response->assertSee('Disabled');
         $response->assertSee('input type="checkbox" name="disabled"');
     }
+
+    /** @test */
+    public function storing_user_with_disabled_flag_in_post_request_saves_correctly() {
+        $user = factory(\App\Models\User::class)->create();
+
+        $player = factory(Player::class)->make(['disabled' => 1]);
+        $playerArray = $player->toArray();
+        
+        $response = $this->actingAs($user)->post('/players', $playerArray);
+
+        $this->assertDatabaseHas('players', $playerArray);
+    }
 }
