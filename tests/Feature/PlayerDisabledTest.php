@@ -68,4 +68,16 @@ class PlayerDisabledTest extends TestCase
         $response = $this->get('picks/weekly/' . $pick_token->token);
         $response->assertRedirect('picks');
     }
+
+    /** @test */
+    public function an_option_to_disable_players_is_shown_on_creation() 
+    {
+        $user = factory(\App\Models\User::class)->create();
+
+        $response = $this->actingAs($user)
+            ->get('/players/create');
+        
+        $response->assertSee('Disabled');
+        $response->assertSee('input type="checkbox" name="disabled"');
+    }
 }
