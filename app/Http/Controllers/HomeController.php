@@ -30,7 +30,9 @@ class HomeController extends Controller
         // TODO: Add this snippet where we get the league table to a helper function so that 
         // it can be used by both this function and the league controller
         $league_table = Table::where('season_id', $season->id)
-            ->with('player')
+            ->with(['player' => function($query) {
+                $query->where('disabled', 0);
+            }])
             ->orderByDesc('score')
             ->orderByDesc('wins')
             ->get()
@@ -41,6 +43,7 @@ class HomeController extends Controller
         if(!$league_table->count()) {
             // Grab Players and add each one into there with default values.
             $league_table = Player::orderBy('name')
+                ->where('disabled', 0)
                 ->get()
                 ->mapWithKeys(function($player) {
                     return [

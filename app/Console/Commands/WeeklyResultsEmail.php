@@ -54,7 +54,9 @@ class WeeklyResultsEmail extends Command
 
         $last_week = new Carbon('last saturday');
         $results = PlayerTeam::whereHas('team')
-                ->with('player', 'team', 'fixture.game')
+                ->with(['player' => function($q) {
+                    $q->where('disabled', 0);
+                }, 'team', 'fixture.game'])
                 ->where('game_date', $last_week)
                 ->get();
 
@@ -66,7 +68,9 @@ class WeeklyResultsEmail extends Command
         $season = current_season();
 
         $table = Table::where('season_id', $season->id)
-            ->with('player')
+            ->whereHas('player', function($q) {
+                return $q->where('disabled', 0);
+            })
             ->orderByDesc('score')
             ->get()
             ->mapWithKeys(function($table) {
@@ -74,8 +78,15 @@ class WeeklyResultsEmail extends Command
             });
 
         // Get all active players emails.
-        $players = Player::all()->pluck('email');
+        $players = Player::where('disabled', 0)->get()->pluck('email');
 
+        if(!count($players)) {
+            Mail::raw('There are no valid result entries this week.', function ($message) {
+                $message->to('jaymehsykes@gmail.com')
+                    ->subject('No results this week.');
+            });
+        }
+        
         Mail::to($players)
             ->bcc('jaymeh@jaymeh.co.uk')
             ->send(new WeeklyResults($results, $table));

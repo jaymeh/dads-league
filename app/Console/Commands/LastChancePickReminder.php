@@ -53,11 +53,15 @@ class LastChancePickReminder extends Command
         $players_not_picked = Player::whereDoesntHave('picks', function($q) {
                 $q->where('game_date', new Carbon('this saturday'));
             })
+            ->where('disabled', 0)
             ->with('token')
             ->get();
 
+        // dd($players_not_picked);
+
         foreach($players_not_picked as $player)
         {
+            // dd($player);
             if($player->token) {
                 Mail::to($player->email)
                     ->cc('mark@shelleyfootball.club')

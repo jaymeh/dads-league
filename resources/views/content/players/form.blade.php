@@ -86,7 +86,26 @@
 
                             <div class="field is-horizontal">
                                 <div class="field-label"></div>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <p class="control">
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="disabled" @if(old('disabled', isset($player) ? $player->disabled : null)) echo 'checked' @endif>
+                                                Disabled?
+                                            </label>
+                                        </p>
 
+                                        @if ($errors->has('disabled'))
+                                            <p class="help is-danger">
+                                                {{ $errors->first('disabled') }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field is-horizontal">
+                                <div class="field-label"></div>
                                 <div class="field-body">
                                     <div class="field is-clearfix">
                                         <div class="is-pulled-left">

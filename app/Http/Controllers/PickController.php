@@ -11,10 +11,6 @@ use Illuminate\Http\Request;
 
 class PickController extends Controller
 {
-    public function __construct()
-    {
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -33,7 +29,14 @@ class PickController extends Controller
         }
 
         // Get fixtures for this week wherehas and with player teams
-        $player_team_by_date = PlayerTeam::with('player', 'fixture.game', 'fixture.homeTeam', 'fixture.awayTeam')
+        $player_team_by_date = PlayerTeam::with([
+                'player' => function($query) {
+                    $query->where('disabled', 0);
+                }, 
+                'fixture.game', 
+                'fixture.homeTeam', 
+                'fixture.awayTeam'
+            ])
             ->where('season_id', $season->id)
             ->get()
             ->sortByDesc('game_date')
@@ -112,10 +115,12 @@ class PickController extends Controller
         // Find with token.
         $player_token = PickToken::where('token', $token)
             ->whereDate('expiry', '>=', $now->toDateString())
-            ->with(['player.picks' => function($q) use ($fixture_date, $season) {
-                $q->where('game_date', '!=', $fixture_date);
-                $q->where('player_teams.season_id', $season->id);
-            }])
+            ->with([
+                'player.picks' => function($q) use ($fixture_date, $season) {
+                    $q->where('game_date', '!=', $fixture_date);
+                    $q->where('player_teams.season_id', $season->id);
+                }
+            ])
             ->first();
 
         if(!$player_token)
@@ -135,6 +140,12 @@ class PickController extends Controller
         }
 
         $player = $player_token->player;
+
+        if($player->disabled) {
+            trigger_message('Your account is disabled. Please contact Mark if you feel this is returned in error.', 'error');
+
+            return redirect()->route('picks.index');
+        } 
 
         $excluded_ids = PlayerTeam::teamsToExclude($player->id, $fixture_date, $season);
 
@@ -222,6 +233,7 @@ class PickController extends Controller
 
         $season_id = $season->id;
         $players = Player::whereHas('picks')
+            ->where('disabled', 0)
             ->with(['picks' => function($q) use($season_id) {
                 $q->where('player_teams.season_id', $season_id);
                 $q->orderByDesc('game_date');

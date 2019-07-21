@@ -67,8 +67,10 @@ class SendPickReminderCommand extends Command
         PickToken::query()->truncate();
 
         // Check if there are any picks this week
-        $fixture_date = new Carbon('2018/08/04 00:21:00');
-        $fixture_count = Fixture::whereDate('game_date', '=', $fixture_date->toDateString())->count();
+        $fixture_date = new Carbon('this saturday');
+        $fixture_count = Fixture::where('game_date', '=', $fixture_date)->count();
+
+        // dd($fixture_count);
 
         if(!$fixture_count) {
             Mail::raw('There are no fixtures to pick from this week.', function ($message) {
@@ -79,7 +81,7 @@ class SendPickReminderCommand extends Command
         }
 
         // Get all players
-        $players = Player::get();
+        $players = Player::where('disabled', 0)->get();
 
         foreach($players as $player)
         {
