@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\Fixture;
 use App\Models\PickToken;
 use App\Models\Player;
@@ -87,7 +85,7 @@ class PlayerDisabledTest extends TestCase
 
         $player = factory(Player::class)->make(['disabled' => 1]);
         $playerArray = $player->toArray();
-        
+
         $response = $this->actingAs($user)->post('/players', $playerArray);
 
         $this->assertDatabaseHas('players', $playerArray);
